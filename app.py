@@ -14,4 +14,4 @@ app.run(debug = True)
 
 # https://www.w3schools.com/icons/
 
-# python -m venv env
+# py -m venv env

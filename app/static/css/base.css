@@ -1,0 +1,35 @@
+.brand-link.r:hover {
+    color: rgb(255 255 255 / 100%) !important;
+}
+
+.brand-text {
+    padding-left: 8px;
+}
+
+.nav-link.r {
+    color: rgb(255 255 255 / 100%) !important;
+}
+
+.sidebar.r {
+    padding-top: 4px;
+}
+
+.dark-mode input:-webkit-autofill, .dark-mode input:-webkit-autofill:focus, .dark-mode input:-webkit-autofill:hover, .dark-mode select:-webkit-autofill, .dark-mode select:-webkit-autofill:focus, .dark-mode select:-webkit-autofill:hover, .dark-mode textarea:-webkit-autofill, .dark-mode textarea:-webkit-autofill:focus, .dark-mode textarea:-webkit-autofill:hover {
+    -webkit-text-fill-color: #000;
+}
+
+#back-to-top {
+    display: none;
+}
+
+.info-box.r-bg-blue {
+    background-color: #3f6791;
+}
+
+.text-primary.r {
+    color: #17a2b8 !important;
+}
+
+#sales-chart {
+    height: 225px;
+}

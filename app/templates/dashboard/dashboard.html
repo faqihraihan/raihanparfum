@@ -4,87 +4,103 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">Coming Soon</h1>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div>
+    <div class="content-header"></div>
     <!-- /.content-header -->
 
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
-        <!-- Info boxes -->
-        <div class="row">
-          <div class="col-12 col-sm-6 col-md-3">
-            <div class="info-box">
-              <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
 
-              <div class="info-box-content">
-                <span class="info-box-text">CPU Traffic</span>
-                <span class="info-box-number">
-                  10
-                  <small>%</small>
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="d-flex justify-content-between">
+              <h3 class="card-title">Rekap Penjualan</h3>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="d-flex">
+              <p class="d-flex flex-column">
+                <span class="text-bold text-lg">Rp. {{ "{:0,.2f}".format(total_this_month).replace(',', 'x').replace('.', ',').replace('x', '.') }}</span>
+                <span>Total Penjualan Bulan Ini</span>
+              </p>
+              <p class="ml-auto d-flex flex-column text-right">
+                <span class="text-{{ status_month }}">
+                  <i class="fas fa-arrow-{{ icon_month }}"></i> {{ result_month }}%
                 </span>
-              </div>
-              <!-- /.info-box-content -->
+                <span class="text-muted">Sejak Bulan Lalu</span>
+              </p>
             </div>
-            <!-- /.info-box -->
-          </div>
-          <!-- /.col -->
-          <div class="col-12 col-sm-6 col-md-3">
-            <div class="info-box mb-3">
-              <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-thumbs-up"></i></span>
+            <!-- /.d-flex -->
 
-              <div class="info-box-content">
-                <span class="info-box-text">Likes</span>
-                <span class="info-box-number">41,410</span>
-              </div>
-              <!-- /.info-box-content -->
+            <div class="position-relative mb-4">
+              <canvas id="sales-chart"></canvas>
             </div>
-            <!-- /.info-box -->
-          </div>
-          <!-- /.col -->
 
-          <!-- fix for small devices only -->
-          <div class="clearfix hidden-md-up"></div>
+            <div class="d-flex flex-row justify-content-end">
+              <span class="mr-2">
+                <i class="fas fa-square text-primary r"></i> Bulan Ini
+              </span>
 
-          <div class="col-12 col-sm-6 col-md-3">
-            <div class="info-box mb-3">
-              <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
-
-              <div class="info-box-content">
-                <span class="info-box-text">Sales</span>
-                <span class="info-box-number">760</span>
-              </div>
-              <!-- /.info-box-content -->
+              <span class="text-muted">
+                <i class="fas fa-square text-gray"></i> Bulan Lalu <small>(Coming Soon)</small>
+              </span>
             </div>
-            <!-- /.info-box -->
           </div>
-          <!-- /.col -->
-          <div class="col-12 col-sm-6 col-md-3">
-            <div class="info-box mb-3">
-              <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
-
-              <div class="info-box-content">
-                <span class="info-box-text">New Members</span>
-                <span class="info-box-number">2,000</span>
+         
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-sm-3 col-6">
+                <div class="description-block border-right">
+                  <span class="description-percentage text-{{ status_today }}"><i class="fas fa-caret-{{ icon_today }}"></i> {{ result_today }}%</span>
+                  <h5 class="description-header">Rp. {{ "{:0,.2f}".format(total_today).replace(',', 'x').replace('.', ',').replace('x', '.') }}</h5>
+                  <span class="description-text">Hari Ini</span>
+                </div>
+                <!-- /.description-block -->
               </div>
-              <!-- /.info-box-content -->
+              <!-- /.col -->
+              <div class="col-sm-3 col-6">
+                <div class="description-block border-right">
+                  <span class="description-percentage text-{{ status_week }}"><i class="fas fa-caret-{{ icon_week }}"></i> {{ result_week }}%</span>
+                  <h5 class="description-header">Rp. {{ "{:0,.2f}".format(total_this_week).replace(',', 'x').replace('.', ',').replace('x', '.') }}</h5>
+                  <span class="description-text">Minggu Ini</span>
+                </div>
+                <!-- /.description-block -->
+              </div>
+              <!-- /.col -->
+              <div class="col-sm-3 col-6">
+                <div class="description-block border-right">
+                  <span class="description-percentage text-{{ status_month }}"><i class="fas fa-caret-{{ icon_month }}"></i> {{ result_month }}%</span>
+                  <h5 class="description-header">Rp. {{ "{:0,.2f}".format(total_this_month).replace(',', 'x').replace('.', ',').replace('x', '.') }}</h5>
+                  <span class="description-text">Bulan Ini</span>
+                </div>
+                <!-- /.description-block -->
+              </div>
+              <!-- /.col -->
+              <div class="col-sm-3 col-6">
+                <div class="description-block">
+                  <span class="description-percentage text-{{ status_year }}"><i class="fas fa-caret-{{ icon_year }}"></i> {{ result_year }}%</span>
+                  <h5 class="description-header">Rp. {{ "{:0,.2f}".format(total_this_year).replace(',', 'x').replace('.', ',').replace('x', '.') }}</h5>
+                  <span class="description-text">Tahun Ini</span>
+                </div>
+                <!-- /.description-block -->
+              </div>
             </div>
-            <!-- /.info-box -->
+            <!-- /.row -->
           </div>
-          <!-- /.col -->
         </div>
-        <!-- /.row -->
+        <!-- /.card -->
          
       </div><!--/. container-fluid -->
     </section>
     <!-- /.content -->
+
+    <a id="back-to-top" href="#" class="btn btn-primary back-to-top" role="button" aria-label="Scroll to top">
+      <i class="fas fa-chevron-up"></i>
+    </a>
   </div>
   <!-- /.content-wrapper -->
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %}

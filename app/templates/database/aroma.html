@@ -27,58 +27,63 @@
 
     <!-- Main content -->
     <section class="content">
+      <div class="container-fluid">
 
-      <!-- Default box -->
-      <div class="card">
-        <div class="card-body p-0">
-          <table class="table table-striped projects">
-              <thead>
-                  <tr>
-                      <th style="width: 55%">
-                        Nama Aroma
-                      </th>
-                      <th style="width: 10%">
-                        Pabrik
-                      </th>
-                      <th style="width: 15%">
-                        Harga Satuan
-                      </th>
-                      <th style="width: 20%" class="text-right">
-                        <a class="btn btn-success btn-sm" href="" data-toggle="modal" data-target="#addmodal">
-                            <i class="fas fa-folder"></i>
-                            Tambah
-                        </a>
-                      </th>
-                  </tr>
-              </thead>
-              <tbody>
-                {% for row in aroma %}
+        <!-- Default box -->
+        <div class="card">
+          <div class="card-body p-0">
+            <table class="table table-striped projects">
+                <thead>
                     <tr>
-                        <td>{{ row.nama }}</td>
-                        <td>{{ row.pabrik.nama }}</td>
-                        <td>{{ row.harga }}</td>
-                        <td class="text-right">
-                            <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editmodal{{ row.id_aroma }}">
-                                <i class="fas fa-pencil-alt"></i>
-                                Ubah
-                            </a>
-                            <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deletemodal{{row.id_aroma}}">
-                                <i class="fas fa-trash"></i>
-                                Hapus
-                            </a>
-                        </td>
+                        <th style="width: 55%">
+                          Nama Aroma
+                        </th>
+                        <th style="width: 10%">
+                          Pabrik
+                        </th>
+                        <th style="width: 15%">
+                          Harga Satuan
+                        </th>
+                        <th style="width: 20%" class="text-right">
+                          <a class="btn btn-success btn-sm" href="" data-toggle="modal" data-target="#addmodal">
+                              <i class="fas fa-folder"></i>
+                              Tambah
+                          </a>
+                        </th>
                     </tr>
-                {% endfor %}
-              </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {% for row in aroma %}
+                      <tr>
+                          <td>{{ row.nama }}</td>
+                          <td>{{ row.pabrik.nama }}</td>
+                          <td>Rp. {{ "{:0,.2f}".format(row.harga).replace(',', 'x').replace('.', ',').replace('x', '.') }}</td>
+                          <td class="text-right">
+                              <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editmodal{{ row.id_aroma }}">
+                                  <i class="fas fa-pencil-alt"></i>
+                                  Ubah
+                              </a>
+                              <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deletemodal{{row.id_aroma}}">
+                                  <i class="fas fa-trash"></i>
+                                  Hapus
+                              </a>
+                          </td>
+                      </tr>
+                  {% endfor %}
+                </tbody>
+            </table>
+          </div>
+          <!-- /.card-body -->
         </div>
-        <!-- /.card-body -->
+        <!-- /.card -->
 
       </div>
-      <!-- /.card -->
-
     </section>
     <!-- /.content -->
+
+    <a id="back-to-top" href="#" class="btn btn-primary back-to-top" role="button" aria-label="Scroll to top">
+      <i class="fas fa-chevron-up"></i>
+    </a>
   </div>
   <!-- /.content-wrapper -->
 
