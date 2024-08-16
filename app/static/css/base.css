@@ -30,6 +30,10 @@
     color: #17a2b8 !important;
 }
 
+.text-gray.r {
+    color: #ced4da !important;
+}
+
 #sales-chart {
     height: 225px;
 }

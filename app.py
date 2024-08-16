@@ -14,4 +14,6 @@ app.run(debug = True)
 
 # https://www.w3schools.com/icons/
 
+# auto-py-to-exe
+
 # py -m venv env

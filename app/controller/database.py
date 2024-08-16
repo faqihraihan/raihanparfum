@@ -7,6 +7,7 @@ datab = Blueprint('datab', __name__)
 
 @datab.route('/database/penjualan', methods=['GET', 'POST'])
 def penjualan():
+
     penjualan = db.session.query(Penjualan).order_by(Penjualan.id_penjualan.desc()).limit(10).all()
     pabrik = db.session.query(Pabrik).all()
 
@@ -80,6 +81,24 @@ def penjualan_delete():
 def aroma():
     aroma = db.session.query(Aroma).order_by(Aroma.id_aroma.desc()).limit(10).all()
     pabrik = db.session.query(Pabrik).all()
+
+    results = []
+    if request.method == 'POST':
+        search_pabrik = request.form.get('search_pabrik')
+        search_aroma = request.form.get('search_aroma')
+
+        if search_pabrik is None:
+            search_pabrik = ''
+
+        if search_aroma is None:
+            search_aroma = ''
+
+        results = db.session.query(Aroma).filter(
+            Aroma.id_pabrik.contains(search_pabrik),
+            Aroma.nama.contains(search_aroma)
+        ).limit(10).all()
+    
+        return render_template('database/aroma.html', aroma_nav = 'active', aroma = aroma, pabrik = pabrik, search_aroma = results)
 
     return render_template('database/aroma.html', aroma_nav = 'active', aroma = aroma, pabrik = pabrik)
 
