@@ -1,0 +1,296 @@
+{% extends 'database/base-database.html' %}
+
+{% block body %}
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              {% if category == 'success'%}
+                <div class="alert alert-{{ category }} alert-dismissible r">
+                  <button type="button" class="close r" data-dismiss="alert" aria-hidden="true">×</button>
+                  <h6 class="flash r"><i class="icon fas fa-check"></i> {{ message }}</h6>
+                </div>
+              {% else %}
+                <div class="alert alert-{{ category }} alert-dismissible r">
+                  <button type="button" class="close r" data-dismiss="alert" aria-hidden="true">×</button>
+                  <h6 class="flash r"><i class="icon fas fa-info"></i> {{ message }}</h6>
+                </div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+
+        <!-- Default box -->
+        <div class="card">
+          <div class="card-body p-0">
+            <table class="table table-striped projects">
+                <thead>
+                    <tr>
+                        <th style="width: 50%">
+                          Nama
+                        </th>
+                        <th style="width: 30%">
+                          Stock
+                        </th>
+                        <th style="width: 20%" class="text-right">
+                          {% if search_stock %}
+                            <a class="btn btn-tool" href="{{ url_for('datab.stock') }}">
+                              <i class="fas fa-redo"></i>
+                            </a>
+                          {% endif %}
+                          <a class="btn btn-tool" href="" data-toggle="modal" data-target="#searchmodal">
+                            <i class="fas fa-search"></i>
+                          </a>
+                          <a class="btn btn-success btn-sm" href="" data-toggle="modal" data-target="#addmodal">
+                              <i class="fas fa-folder"></i>
+                              Tambah
+                          </a>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                  {% if search_stock %}
+                    {% for row in search_stock %}
+                        <tr>
+                            <td>
+                              {{ row.aroma.nama }}
+                              <small>
+                                ( {{ row.pabrik.nama }} )
+                              </small>
+                            </td>
+                            <td>{{ row.stock }} ml</td>
+                            <td class="text-right">
+                                <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editmodal{{ row.id_stock }}">
+                                    <i class="fas fa-pencil-alt"></i>
+                                    Ubah
+                                </a>
+                                <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deletemodal{{row.id_stock}}">
+                                    <i class="fas fa-trash"></i>
+                                    Hapus
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                  {% else %}
+                    {% for row in stock %}
+                        <tr>
+                            <td>
+                              {{ row.aroma.nama }}
+                              <small>
+                                ( {{ row.pabrik.nama }} )
+                              </small>
+                            </td>
+                            <td>{{ row.stock }} ml</td>
+                            <td class="text-right">
+                                <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editmodal{{ row.id_stock }}">
+                                    <i class="fas fa-pencil-alt"></i>
+                                    Ubah
+                                </a>
+                                <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deletemodal{{row.id_stock}}">
+                                    <i class="fas fa-trash"></i>
+                                    Hapus
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                  {% endif %}
+                </tbody>
+            </table>
+          </div>
+          <!-- /.card-body -->
+
+        </div>
+        <!-- /.card -->
+
+      </div>
+    </section>
+    <!-- /.content -->
+
+    <a id="back-to-top" href="#" class="btn btn-primary back-to-top" role="button" aria-label="Scroll to top">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+  <!-- /.content-wrapper -->
+
+  <!-- Modal Add Stock -->
+  <div id="addmodal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Tambah Data Stock</h4>
+          </div>
+          <div class="modal-body card-body register-card-body parent-response-class">
+            <form action="{{url_for('datab.stock_add')}}" method="POST">
+              <div class="form-group input-group">
+                <select name="pabrik" class="form-control pabrik-response" required> 
+                  <option value="" disabled selected hidden>Nama Pabrik</option>  
+                  {% for row in pabrik %} 
+                    <option value="{{ row.id_pabrik }}">{{ row.nama }}</option>
+                  {% endfor %}
+                </select>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-industry"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group input-group">
+                <select name="aroma" class="form-control aroma-response" required> 
+                  <option value="" disabled selected hidden>Aroma</option>  
+                </select>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-spray-can"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group input-group">
+                <input type="number" class="form-control" name="stock" placeholder="Stock">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-box"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-primary btn-success" type="submit">Tambah</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+              </div>
+            </form>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Edit Stock -->
+  {% for row in stock %}
+    <div id="editmodal{{ row.id_stock }}" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Ubah Data Stock</h4>
+            </div>
+            <div class="modal-body card-body register-card-body parent-response-class">
+              <form action="{{ url_for('datab.stock_edit') }}" method="POST">
+                  <div class="form-group input-group">
+                    <input type="hidden"  name="id_stock" value="{{ row.id_stock }}">
+                    <input type="number" class="form-control" name="stock" placeholder="Stock" value="{{ row.stock }}">
+                    <div class="input-group-append">
+                      <div class="input-group-text">
+                        <span class="nav-icon fas fa-box"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn btn-primary btn-wrn" type="submit">Ubah</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                  </div>
+              </form>
+            </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+  <!-- Modal Delete Stock -->
+  {% for row in stock %}
+    <div id="deletemodal{{row.id_stock}}" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Hapus Data Stock</h4>
+            </div>
+            <div class="modal-body card-body register-card-body">
+              <h6><b>Nama</b></h6>
+              <div class="form-group input-group">
+                <input type="text" class="form-control" value="{{ row.aroma.nama }}" disabled>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-spray-can"></span>
+                  </div>
+                </div>
+              </div>
+              <h6><b>Pabrik</b></h6>
+              <div class="form-group input-group">
+                <input type="text" class="form-control" value="{{ row.pabrik.nama }}" disabled>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-industry"></span>
+                  </div>
+                </div>
+              </div>
+              <h6><b>Stock</b></h6>
+              <div class="form-group input-group">
+                <input type="number" class="form-control" value="{{ row.stock }}" disabled>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-box"></span>
+                  </div>
+                </div>
+              </div>
+              <form action="{{ url_for('datab.stock_delete') }}" method="POST">
+                  <div class="modal-footer">
+                    <input type="hidden"  name="id_stock" value="{{ row.id_stock }}">
+                    <button class="btn btn-primary btn-dgr" type="submit">Hapus</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                  </div>
+              </form>
+            </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+  <!-- Modal Search Stock -->
+  {% for row in stock %}
+    <div id="searchmodal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Cari Data Stock</h4>
+            </div>
+            <div class="modal-body card-body register-card-body">
+              <form action="{{url_for('datab.stock')}}" method="POST">
+                <div class="form-group input-group">
+                  <select name="search_pabrik" class="form-control"> 
+                    <option value="" disabled selected hidden>Nama Pabrik</option>
+                    <option value="">Semua</option>  
+                    {% for row in pabrik %} 
+                      <option value="{{ row.id_pabrik }}">{{ row.nama }}</option>
+                    {% endfor %}
+                  </select>
+                  <div class="input-group-append">
+                    <div class="input-group-text">
+                      <span class="nav-icon fas fa-industry"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group input-group">
+                  <input type="text" class="form-control" name="search_aroma" placeholder="Aroma">
+                  <div class="input-group-append">
+                    <div class="input-group-text">
+                      <span class="nav-icon fas fa-spray-can"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn btn-primary btn-success" type="submit">Cari</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                </div>
+              </form>
+            </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}

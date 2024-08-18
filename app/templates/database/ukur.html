@@ -37,7 +37,7 @@
                 <thead>
                     <tr>
                         <th style="width: 80%">
-                            Nama Pabrik
+                            Satuan
                         </th>
                         <th style="width: 20%" class="text-right">
                           <a class="btn btn-success btn-sm" href="" data-toggle="modal" data-target="#addmodal">
@@ -48,15 +48,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                  {% for row in pabrik %}
+                  {% for row in ukur %}
                       <tr>
                           <td>{{ row.nama }}</td>
                           <td class="text-right">
-                              <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editmodal{{ row.id_pabrik }}">
+                              <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editmodal{{ row.id_ukur }}">
                                   <i class="fas fa-pencil-alt"></i>
                                   Ubah
                               </a>
-                              <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deletemodal{{ row.id_pabrik }}">
+                              <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deletemodal{{ row.id_ukur }}">
                                   <i class="fas fa-trash"></i>
                                   Hapus
                               </a>
@@ -80,20 +80,20 @@
   </div>
   <!-- /.content-wrapper -->
 
-  <!-- Modal Add Pabrik -->
+  <!-- Modal Add Satuan -->
   <div id="addmodal" class="modal fade" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title">Tambah Data Pabrik</h4>
+            <h4 class="modal-title">Tambah Data Satuan</h4>
           </div>
           <div class="modal-body card-body register-card-body">
-            <form action="{{url_for('datab.pabrik_add')}}" method="POST">
+            <form action="{{url_for('datab.ukur_add')}}" method="POST">
               <div class="form-group input-group">
-                <input type="text" class="form-control" name="nama" placeholder="Nama Pabrik" required>
+                <input type="text" class="form-control" name="nama" placeholder="Satuan" required>
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="fas fa-industry"></span>
+                    <span class="fas fa-ruler-combined"></span>
                   </div>
                 </div>
               </div>
@@ -107,22 +107,22 @@
     </div>
   </div>
 
-  <!-- Modal Edit Pabrik -->
-  {% for row in pabrik %}
-    <div id="editmodal{{ row.id_pabrik }}" class="modal fade" role="dialog">
+  <!-- Modal Edit Satuan -->
+  {% for row in ukur %}
+    <div id="editmodal{{ row.id_ukur }}" class="modal fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Ubah Data Pabrik</h4>
+              <h4 class="modal-title">Ubah Data Satuan</h4>
             </div>
             <div class="modal-body card-body register-card-body">
-              <form action="{{ url_for('datab.pabrik_edit') }}" method="POST">
+              <form action="{{ url_for('datab.ukur_edit') }}" method="POST">
                   <div class="form-group input-group">
-                    <input type="hidden"  name="id_pabrik" value="{{ row.id_pabrik }}">
-                    <input type="text" class="form-control" name="nama" placeholder="Nama Pabrik" value="{{ row.nama }}">
+                    <input type="hidden"  name="id_ukur" value="{{ row.id_ukur }}">
+                    <input type="text" class="form-control" name="nama" placeholder="Satuan" value="{{ row.nama }}">
                     <div class="input-group-append">
                       <div class="input-group-text">
-                        <span class="fas fa-industry"></span>
+                        <span class="fas fa-ruler-combined"></span>
                       </div>
                     </div>
                   </div>
@@ -137,27 +137,27 @@
     </div>
   {% endfor %}
 
-  <!-- Modal Delete Pabrik -->
-  {% for row in pabrik %}
-    <div id="deletemodal{{ row.id_pabrik }}" class="modal fade" role="dialog">
+  <!-- Modal Delete Satuan -->
+  {% for row in ukur %}
+    <div id="deletemodal{{ row.id_ukur }}" class="modal fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Hapus Data Pabrik</h4>
+              <h4 class="modal-title">Hapus Data Satuan</h4>
             </div>
             <div class="modal-body card-body register-card-body">
-              <h6><b>Nama Pabrik</b></h6>
+              <h6><b>Satuan</b></h6>
               <div class="form-group input-group">
                 <input type="text" class="form-control" value="{{ row.nama }}" disabled>
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="fas fa-industry"></span>
+                    <span class="fas fa-ruler-combined"></span>
                   </div>
                 </div>
               </div>
-              <form action="{{ url_for('datab.pabrik_delete') }}" method="POST">
+              <form action="{{ url_for('datab.ukur_delete') }}" method="POST">
                   <div class="modal-footer">
-                    <input type="hidden"  name="id_pabrik" value="{{ row.id_pabrik }}">
+                    <input type="hidden"  name="id_ukur" value="{{ row.id_ukur }}">
                     <button class="btn btn-primary btn-dgr" type="submit">Hapus</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                   </div>

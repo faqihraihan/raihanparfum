@@ -9,16 +9,17 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
-              <div class="alert alert-success alert-dismissable" role="alert">
-                  <button type="button" class="close" data-dismiss="alert" aria-label="close">
-                      <span aria-hidden="true" class="bi bi-x-lg"></span>
-                  </button>
-                {% if category == 'pass-error'%}
-                  {{ message }}.
-                {% else %}
-                  {{ message }}.
-                {% endif %}
-              </div>
+              {% if category == 'success'%}
+                <div class="alert alert-{{ category }} alert-dismissible r">
+                  <button type="button" class="close r" data-dismiss="alert" aria-hidden="true">×</button>
+                  <h6 class="flash r"><i class="icon fas fa-check"></i> {{ message }}</h6>
+                </div>
+              {% else %}
+                <div class="alert alert-{{ category }} alert-dismissible r">
+                  <button type="button" class="close r" data-dismiss="alert" aria-hidden="true">×</button>
+                  <h6 class="flash r"><i class="icon fas fa-info"></i> {{ message }}</h6>
+                </div>
+              {% endif %}
             {% endfor %}
           {% endif %}
         {% endwith %}
@@ -35,16 +36,13 @@
             <table class="table table-striped projects">
                 <thead>
                     <tr>
-                        <th style="width: 55%">
-                          Nama Aroma
+                        <th rowspan="2"  class="text-center vertical" style="width: 35%">
+                          Aroma
                         </th>
-                        <th style="width: 10%">
-                          Pabrik
+                        <th colspan="5" style="width: 50%" class="text-center">
+                          Harga per ml
                         </th>
-                        <th style="width: 15%">
-                          Harga Satuan
-                        </th>
-                        <th style="width: 20%" class="text-right">
+                        <th rowspan="2" style="width: 15%" class="text-right vertical">
                           {% if search_aroma %}
                             <a class="btn btn-tool" href="{{ url_for('datab.aroma') }}">
                               <i class="fas fa-redo"></i>
@@ -55,8 +53,24 @@
                           </a>
                           <a class="btn btn-success btn-sm" href="" data-toggle="modal" data-target="#addmodal">
                               <i class="fas fa-folder"></i>
-                              Tambah
                           </a>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th class="text-center">
+                          ml
+                        </th>
+                        <th class="text-center">
+                          100 ml
+                        </th>
+                        <th class="text-center">
+                          250 ml
+                        </th>
+                        <th class="text-center">
+                          500 ml
+                        </th>
+                        <th class="text-center">
+                          1.000 ml
                         </th>
                     </tr>
                 </thead>
@@ -64,17 +78,20 @@
                   {% if search_aroma %}
                     {% for row in search_aroma %}
                         <tr>
-                            <td>{{ row.nama }}</td>
-                            <td>{{ row.pabrik.nama }}</td>
-                            <td>Rp. {{ "{:0,.2f}".format(row.harga).replace(',', 'x').replace('.', ',').replace('x', '.') }}</td>
+                            <td>
+                                {{ row.nama }} <small>({{ row.pabrik.nama }})</small>
+                            </td>
+                            <td class="text-center">{{ row.harga }}</td>
+                            <td class="text-center">{{ row.harga2 }}</td>
+                            <td class="text-center">{{ row.harga3 }}</td>
+                            <td class="text-center">{{ row.harga4 }}</td>
+                            <td class="text-center">{{ row.harga5 }}</td>
                             <td class="text-right">
                                 <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editmodal{{ row.id_aroma }}">
                                     <i class="fas fa-pencil-alt"></i>
-                                    Ubah
                                 </a>
                                 <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deletemodal{{row.id_aroma}}">
                                     <i class="fas fa-trash"></i>
-                                    Hapus
                                 </a>
                             </td>
                         </tr>
@@ -82,17 +99,20 @@
                   {% else %}
                     {% for row in aroma %}
                         <tr>
-                            <td>{{ row.nama }}</td>
-                            <td>{{ row.pabrik.nama }}</td>
-                            <td>Rp. {{ "{:0,.2f}".format(row.harga).replace(',', 'x').replace('.', ',').replace('x', '.') }}</td>
+                            <td>
+                                {{ row.nama }} <small>({{ row.pabrik.nama }})</small>
+                            </td>
+                            <td class="text-center">{{ row.harga }}</td>
+                            <td class="text-center">{{ row.harga2 }}</td>
+                            <td class="text-center">{{ row.harga3 }}</td>
+                            <td class="text-center">{{ row.harga4 }}</td>
+                            <td class="text-center">{{ row.harga5 }}</td>
                             <td class="text-right">
                                 <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editmodal{{ row.id_aroma }}">
                                     <i class="fas fa-pencil-alt"></i>
-                                    Ubah
                                 </a>
                                 <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deletemodal{{row.id_aroma}}">
                                     <i class="fas fa-trash"></i>
-                                    Hapus
                                 </a>
                             </td>
                         </tr>
@@ -125,10 +145,10 @@
           <div class="modal-body card-body register-card-body">
             <form action="{{url_for('datab.aroma_add')}}" method="POST">
               <div class="form-group input-group">
-                <input type="text" class="form-control" name="nama" placeholder="Nama Aroma" required>
+                <input type="text" class="form-control" name="nama" placeholder="Aroma" required>
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="nav-icon fas fa-fire"></span>
+                    <span class="nav-icon fas fa-spray-can"></span>
                   </div>
                 </div>
               </div>
@@ -141,12 +161,44 @@
                 </select>
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="nav-icon fas fa-dolly"></span>
+                    <span class="nav-icon fas fa-industry"></span>
                   </div>
                 </div>
               </div>
               <div class="form-group input-group">
-                <input type="number" class="form-control" name="harga" placeholder="Harga Satuan">
+                <input type="number" class="form-control" name="harga" placeholder="Harga/ml">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-donate"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group input-group">
+                <input type="number" class="form-control" name="harga2" placeholder="Harga/100ml">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-donate"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group input-group">
+                <input type="number" class="form-control" name="harga3" placeholder="Harga/250ml">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-donate"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group input-group">
+                <input type="number" class="form-control" name="harga4" placeholder="Harga/500ml">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-donate"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group input-group">
+                <input type="number" class="form-control" name="harga5" placeholder="Harga/1.000ml">
                 <div class="input-group-append">
                   <div class="input-group-text">
                     <span class="nav-icon fas fa-donate"></span>
@@ -175,10 +227,10 @@
               <form action="{{ url_for('datab.aroma_edit') }}" method="POST">
                   <div class="form-group input-group">
                     <input type="hidden"  name="id_aroma" value="{{ row.id_aroma }}">
-                    <input type="text" class="form-control" name="nama" placeholder="Nama Aroma" value="{{ row.nama }}">
+                    <input type="text" class="form-control" name="nama" placeholder="Aroma" value="{{ row.nama }}">
                     <div class="input-group-append">
                       <div class="input-group-text">
-                        <span class="nav-icon fas fa-fire"></span>
+                        <span class="nav-icon fas fa-spray-can"></span>
                       </div>
                     </div>
                   </div>
@@ -191,12 +243,44 @@
                     </select>
                     <div class="input-group-append">
                       <div class="input-group-text">
-                        <span class="nav-icon fas fa-dolly"></span>
+                        <span class="nav-icon fas fa-industry"></span>
                       </div>
                     </div>
                   </div>
                   <div class="form-group input-group">
-                    <input type="number" class="form-control" name="harga" placeholder="Harga Satuan" value="{{ row.harga }}">
+                    <input type="number" class="form-control" name="harga" placeholder="Harga/ml" value="{{ row.harga }}">
+                    <div class="input-group-append">
+                      <div class="input-group-text">
+                        <span class="nav-icon fas fa-donate"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group input-group">
+                    <input type="number" class="form-control" name="harga2" placeholder="Harga/100ml" value="{{ row.harga2 }}">
+                    <div class="input-group-append">
+                      <div class="input-group-text">
+                        <span class="nav-icon fas fa-donate"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group input-group">
+                    <input type="number" class="form-control" name="harga3" placeholder="Harga/250ml" value="{{ row.harga3 }}">
+                    <div class="input-group-append">
+                      <div class="input-group-text">
+                        <span class="nav-icon fas fa-donate"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group input-group">
+                    <input type="number" class="form-control" name="harga4" placeholder="Harga/500ml" value="{{ row.harga4 }}">
+                    <div class="input-group-append">
+                      <div class="input-group-text">
+                        <span class="nav-icon fas fa-donate"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group input-group">
+                    <input type="number" class="form-control" name="harga5" placeholder="Harga/1.000ml" value="{{ row.harga5 }}">
                     <div class="input-group-append">
                       <div class="input-group-text">
                         <span class="nav-icon fas fa-donate"></span>
@@ -223,12 +307,12 @@
               <h4 class="modal-title">Hapus Data Aroma</h4>
             </div>
             <div class="modal-body card-body register-card-body">
-              <h6><b>Nama Aroma</b></h6>
+              <h6><b>Aroma</b></h6>
               <div class="form-group input-group">
                 <input type="text" class="form-control" value="{{ row.nama }}" disabled>
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="nav-icon fas fa-fire"></span>
+                    <span class="nav-icon fas fa-spray-can"></span>
                   </div>
                 </div>
               </div>
@@ -237,13 +321,49 @@
                 <input type="text" class="form-control" value="{{ row.pabrik.nama }}" disabled>
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="nav-icon fas fa-dolly"></span>
+                    <span class="nav-icon fas fa-industry"></span>
                   </div>
                 </div>
               </div>
-              <h6><b>Harga Satuan</b></h6>
+              <h6><b>Harga/ml</b></h6>
               <div class="form-group input-group">
                 <input type="text" class="form-control" value="{{ row.harga }}" disabled>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-donate"></span>
+                  </div>
+                </div>
+              </div>
+              <h6><b>Harga/100ml</b></h6>
+              <div class="form-group input-group">
+                <input type="text" class="form-control" value="{{ row.harga2 }}" disabled>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-donate"></span>
+                  </div>
+                </div>
+              </div>
+              <h6><b>Harga/250ml</b></h6>
+              <div class="form-group input-group">
+                <input type="text" class="form-control" value="{{ row.harga3 }}" disabled>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-donate"></span>
+                  </div>
+                </div>
+              </div>
+              <h6><b>Harga/500ml</b></h6>
+              <div class="form-group input-group">
+                <input type="text" class="form-control" value="{{ row.harga4 }}" disabled>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-donate"></span>
+                  </div>
+                </div>
+              </div>
+              <h6><b>Harga/1.000ml</b></h6>
+              <div class="form-group input-group">
+                <input type="text" class="form-control" value="{{ row.harga5 }}" disabled>
                 <div class="input-group-append">
                   <div class="input-group-text">
                     <span class="nav-icon fas fa-donate"></span>
@@ -283,15 +403,15 @@
                   </select>
                   <div class="input-group-append">
                     <div class="input-group-text">
-                      <span class="nav-icon fas fa-dolly"></span>
+                      <span class="nav-icon fas fa-industry"></span>
                     </div>
                   </div>
                 </div>
                 <div class="form-group input-group">
-                  <input type="text" class="form-control" name="search_aroma" placeholder="Nama Aroma">
+                  <input type="text" class="form-control" name="search_aroma" placeholder="Aroma">
                   <div class="input-group-append">
                     <div class="input-group-text">
-                      <span class="nav-icon fas fa-fire"></span>
+                      <span class="nav-icon fas fa-spray-can"></span>
                     </div>
                   </div>
                 </div>

@@ -36,16 +36,13 @@
             <table class="table table-striped projects">
                 <thead>
                     <tr>
+                        <th style="width: 50%">
+                          Nama Barang
+                        </th>
                         <th style="width: 15%">
-                          Tanggal
+                          Toko
                         </th>
-                        <th style="width: 35%">
-                          Nama Aroma
-                        </th>
-                        <th style="width: 13%">
-                          Qty
-                        </th>
-                        <th style="width: 17%">
+                        <th style="width: 15%">
                           Harga
                         </th>
                         <th style="width: 20%" class="text-right">
@@ -57,23 +54,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                  {% for row in penjualan %}
+                  {% for row in barang %}
                       <tr>
-                          <td>{{ row.date }}</td>
-                          <td>
-                            {{ row.aroma.nama }}
-                            <small>
-                              ( {{ row.pabrik.nama }} )
-                            </small>
-                          </td>
-                          <td>{{ row.qty }} ml</td>
-                          <td>Rp. {{ "{:0,.0f}".format(row.harga).replace(',', '.') }}</td>
+                          <td>{{ row.nama }} <small class="capitalize">({{ row.jenis }})</small></td>
+                          <td>{{ row.supplier.nama }}</td>
+                          <td>Rp. {{ "{:0,.0f}".format(row.harga).replace(',', '.') }} <small>/{{ row.ukur.nama }}</small></td>
                           <td class="text-right">
-                              <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editmodal{{ row.id_penjualan }}">
+                              <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editmodal{{ row.id_barang }}">
                                   <i class="fas fa-pencil-alt"></i>
                                   Ubah
                               </a>
-                              <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deletemodal{{row.id_penjualan}}">
+                              <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deletemodal{{row.id_barang}}">
                                   <i class="fas fa-trash"></i>
                                   Hapus
                               </a>
@@ -84,7 +75,6 @@
             </table>
           </div>
           <!-- /.card-body -->
-
         </div>
         <!-- /.card -->
 
@@ -98,43 +88,45 @@
   </div>
   <!-- /.content-wrapper -->
 
-  <!-- Modal Add Penjualan -->
+  <!-- Modal Add Barang -->
   <div id="addmodal" class="modal fade" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title">Tambah Data Penjualan</h4>
+            <h4 class="modal-title">Tambah Data Barang</h4>
           </div>
-          <div class="modal-body card-body register-card-body parent-response-class">
-            <form action="{{url_for('datab.penjualan_add')}}" method="POST">
+          <div class="modal-body card-body register-card-body">
+            <form action="{{url_for('datab.barang_add')}}" method="POST">
               <div class="form-group input-group">
-                <select name="pabrik" class="form-control pabrik-response" required> 
-                  <option value="" disabled selected hidden>Nama Pabrik</option>  
-                  {% for row in pabrik %} 
-                    <option value="{{ row.id_pabrik }}">{{ row.nama }}</option>
+                <select name="jenis" class="form-control" required> 
+                  <option value="" disabled selected hidden>Jenis Barang</option>
+                  <option value="botol">Botol</option>
+                  <option value="larutan">Larutan</option>
+                </select>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-cogs"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group input-group">
+                <input type="text" class="form-control" name="barang" placeholder="Nama Barang" required>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-flask"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group input-group">
+                <select name="toko" class="form-control" required> 
+                  <option value="" disabled selected hidden>Toko</option>
+                  {% for row in supplier %} 
+                    <option value="{{ row.id_supplier }}">{{ row.nama }}</option>
                   {% endfor %}
                 </select>
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="nav-icon fas fa-industry"></span>
-                  </div>
-                </div>
-              </div>
-              <div class="form-group input-group">
-                <select name="aroma" class="form-control aroma-response" required> 
-                  <option value="" disabled selected hidden>Aroma</option>  
-                </select>
-                <div class="input-group-append">
-                  <div class="input-group-text">
-                    <span class="nav-icon fas fa-spray-can"></span>
-                  </div>
-                </div>
-              </div>
-              <div class="form-group input-group">
-                <input type="number" class="form-control" name="qty" placeholder="Qty">
-                <div class="input-group-append">
-                  <div class="input-group-text">
-                    <span class="nav-icon fas fa-boxes"></span>
+                    <span class="nav-icon fas fa-truck"></span>
                   </div>
                 </div>
               </div>
@@ -142,15 +134,20 @@
                 <input type="number" class="form-control" name="harga" placeholder="Harga">
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="nav-icon fas fa-money-bill"></span>
+                    <span class="nav-icon fas fa-donate"></span>
                   </div>
                 </div>
               </div>
               <div class="form-group input-group">
-                <input type="date" class="form-control" name="date">
+                <select name="ukur" class="form-control" required> 
+                  <option value="" disabled selected hidden>Satuan</option>  
+                  {% for row in ukur %} 
+                    <option value="{{ row.id_ukur }}">{{ row.nama }}</option>
+                  {% endfor %}
+                </select>
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="nav-icon fas fa-calendar"></span>
+                    <span class="nav-icon fas fa-ruler-combined"></span>
                   </div>
                 </div>
               </div>
@@ -164,45 +161,47 @@
     </div>
   </div>
 
-  <!-- Modal Edit Penjualan -->
-  {% for row in penjualan %}
-    <div id="editmodal{{ row.id_penjualan }}" class="modal fade" role="dialog">
+  <!-- Modal Edit Barang -->
+  {% for row in barang %}
+    <div id="editmodal{{ row.id_barang }}" class="modal fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Ubah Data Penjualan</h4>
+              <h4 class="modal-title">Ubah Data Barang</h4>
             </div>
-            <div class="modal-body card-body register-card-body parent-response-class">
-              <form action="{{ url_for('datab.penjualan_edit') }}" method="POST">
+            <div class="modal-body card-body register-card-body">
+              <form action="{{ url_for('datab.barang_edit') }}" method="POST">
                   <div class="form-group input-group">
-                    <input type="hidden"  name="id_penjualan" value="{{ row.id_penjualan }}">
-                    <select name="pabrik" class="form-control pabrik-response" required> 
-                      <option value="{{ row.id_pabrik }}" disabled selected hidden>{{ row.pabrik.nama }}</option>  
-                      {% for row in pabrik %} 
-                        <option value="{{ row.id_pabrik }}">{{ row.nama }}</option>
+                    <input type="hidden"  name="id_barang" value="{{ row.id_barang }}">
+                    <select name="jenis" class="form-control capitalize" required> 
+                      <option value="{{ row.jenis }}" disabled selected hidden>{{ row.jenis }}</option>  
+                      <option value="botol">Botol</option>
+                      <option value="larutan">Larutan</option>
+                    </select>
+                    <div class="input-group-append">
+                      <div class="input-group-text">
+                        <span class="nav-icon fas fa-cogs"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group input-group">
+                    <input type="text" class="form-control" name="barang" placeholder="Nama Barang" value="{{ row.nama }}">
+                    <div class="input-group-append">
+                      <div class="input-group-text">
+                        <span class="nav-icon fas fa-flask"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group input-group">
+                    <select name="toko" class="form-control" required> 
+                      <option value="{{ row.id_supplier }}" disabled selected hidden>{{ row.supplier.nama }}</option>  
+                      {% for row in supplier %} 
+                        <option value="{{ row.id_supplier }}">{{ row.nama }}</option>
                       {% endfor %}
                     </select>
                     <div class="input-group-append">
                       <div class="input-group-text">
-                        <span class="nav-icon fas fa-industry"></span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="form-group input-group">
-                    <select name="aroma" class="form-control aroma-response" required> 
-                      <option value="{{ row.id_aroma }}" disabled selected hidden>{{ row.aroma.nama }}</option>  
-                    </select>
-                    <div class="input-group-append">
-                      <div class="input-group-text">
-                        <span class="nav-icon fas fa-spray-can"></span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="form-group input-group">
-                    <input type="number" class="form-control" name="qty" placeholder="Qty" value="{{ row.qty }}">
-                    <div class="input-group-append">
-                      <div class="input-group-text">
-                        <span class="nav-icon fas fa-boxes"></span>
+                        <span class="nav-icon fas fa-truck"></span>
                       </div>
                     </div>
                   </div>
@@ -210,15 +209,20 @@
                     <input type="number" class="form-control" name="harga" placeholder="Harga" value="{{ row.harga }}">
                     <div class="input-group-append">
                       <div class="input-group-text">
-                        <span class="nav-icon fas fa-money-bill"></span>
+                        <span class="nav-icon fas fa-donate"></span>
                       </div>
                     </div>
                   </div>
                   <div class="form-group input-group">
-                    <input type="date" class="form-control" name="date" value="{{ row.date }}">
+                    <select name="ukur" class="form-control" required> 
+                      <option value="{{ row.id_ukur }}" disabled selected hidden>{{ row.ukur.nama }}</option>  
+                      {% for row in ukur %} 
+                        <option value="{{ row.id_ukur }}">{{ row.nama }}</option>
+                      {% endfor %}
+                    </select>
                     <div class="input-group-append">
                       <div class="input-group-text">
-                        <span class="nav-icon fas fa-calendar"></span>
+                        <span class="nav-icon fas fa-ruler-combined"></span>
                       </div>
                     </div>
                   </div>
@@ -233,66 +237,100 @@
     </div>
   {% endfor %}
 
-  <!-- Modal Delete Penjualan -->
-  {% for row in penjualan %}
-    <div id="deletemodal{{row.id_penjualan}}" class="modal fade" role="dialog">
+  <!-- Modal Delete Barang -->
+  {% for row in barang %}
+    <div id="deletemodal{{row.id_barang}}" class="modal fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Hapus Data Penjualan</h4>
+              <h4 class="modal-title">Hapus Data Barang</h4>
             </div>
             <div class="modal-body card-body register-card-body">
-              <h6><b>Nama Aroma</b></h6>
+              <h6><b>Jenis Barang</b></h6>
               <div class="form-group input-group">
-                <input type="text" class="form-control" value="{{ row.aroma.nama }}" disabled>
+                <input type="text" class="form-control capitalize" value="{{ row.jenis }}" disabled>
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="nav-icon fas fa-spray-can"></span>
+                    <span class="nav-icon fas fa-cogs"></span>
                   </div>
                 </div>
               </div>
-              <h6><b>Pabrik</b></h6>
+              <h6><b>Nama Barang</b></h6>
               <div class="form-group input-group">
-                <input type="text" class="form-control" value="{{ row.pabrik.nama }}" disabled>
+                <input type="text" class="form-control" value="{{ row.nama }}" disabled>
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="nav-icon fas fa-industry"></span>
+                    <span class="nav-icon fas fa-flask"></span>
                   </div>
                 </div>
               </div>
-              <h6><b>Qty</b></h6>
+              <h6><b>Toko</b></h6>
               <div class="form-group input-group">
-                <input type="text" class="form-control" value="{{ row.qty }}" disabled>
+                <input type="text" class="form-control" value="{{ row.supplier.nama }}" disabled>
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="nav-icon fas fa-boxes"></span>
+                    <span class="nav-icon fas fa-truck"></span>
                   </div>
                 </div>
               </div>
               <h6><b>Harga</b></h6>
               <div class="form-group input-group">
-                <input type="text" class="form-control" value="{{ row.harga }}" disabled>
+                <input type="text" class="form-control" value="{{ row.harga }}/{{ row.ukur.nama }}" disabled>
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="nav-icon fas fa-money-bill"></span>
+                    <span class="nav-icon fas fa-donate"></span>
                   </div>
                 </div>
               </div>
-              <h6><b>Tanggal</b></h6>
-              <div class="form-group input-group">
-                <input type="text" class="form-control" value="{{ row.date }}" disabled>
-                <div class="input-group-append">
-                  <div class="input-group-text">
-                    <span class="nav-icon fas fa-calendar"></span>
-                  </div>
-                </div>
-              </div>
-              <form action="{{ url_for('datab.penjualan_delete') }}" method="POST">
+              <form action="{{ url_for('datab.barang_delete') }}" method="POST">
                   <div class="modal-footer">
-                    <input type="hidden"  name="id_penjualan" value="{{ row.id_penjualan }}">
+                    <input type="hidden"  name="id_barang" value="{{ row.id_barang }}">
                     <button class="btn btn-primary btn-dgr" type="submit">Hapus</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                   </div>
+              </form>
+            </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+  <!-- Modal Search Aroma -->
+  {% for row in aroma %}
+    <div id="searchmodal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Cari Data Aroma</h4>
+            </div>
+            <div class="modal-body card-body register-card-body">
+              <form action="{{url_for('datab.aroma')}}" method="POST">
+                <div class="form-group input-group">
+                  <select name="search_pabrik" class="form-control"> 
+                    <option value="" disabled selected hidden>Nama Pabrik</option>
+                    <option value="">Semua</option>  
+                    {% for row in pabrik %} 
+                      <option value="{{ row.id_pabrik }}">{{ row.nama }}</option>
+                    {% endfor %}
+                  </select>
+                  <div class="input-group-append">
+                    <div class="input-group-text">
+                      <span class="nav-icon fas fa-industry"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group input-group">
+                  <input type="text" class="form-control" name="search_aroma" placeholder="Nama Aroma">
+                  <div class="input-group-append">
+                    <div class="input-group-text">
+                      <span class="nav-icon fas fa-spray-can"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn btn-primary btn-success" type="submit">Cari</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                </div>
               </form>
             </div>
         </div>

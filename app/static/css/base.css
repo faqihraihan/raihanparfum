@@ -37,3 +37,28 @@
 #sales-chart {
     height: 225px;
 }
+
+.dark-mode .close.r {
+    color: #fff !important;
+    opacity: .5 !important;
+}
+
+.dark-mode .close.r:hover {
+    opacity: 1 !important;
+}
+
+h6.flash.r, div.alert.r {
+    margin-bottom: 0;
+}
+
+.capitalize {
+    text-transform: capitalize;
+}
+
+.table .vertical {
+    vertical-align: middle;
+}
+
+.item {
+    display: none;
+}

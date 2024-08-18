@@ -31,3 +31,47 @@ $('.pabrik-response').click(function() {
         },
     });
 });
+
+document.getElementById('item-response').addEventListener('change', function() {
+  var items = document.querySelectorAll('.item');
+
+  items.forEach(function(item) {
+      item.style.display = 'none';
+
+      var requiredInputs = item.querySelectorAll('select.required');
+      requiredInputs.forEach(function(input) {
+        input.removeAttribute('required');
+      });
+  });
+
+  var selectedValue = this.value;
+
+  if (selectedValue) {
+      var itemToShow = document.getElementById('item' + selectedValue);
+      if (itemToShow) {
+          itemToShow.style.display = 'block';
+
+          var requiredInputsToShow = itemToShow.querySelectorAll('select.required');
+          requiredInputsToShow.forEach(function(input) {
+            input.setAttribute('required', 'required');
+          });
+      }
+  }
+});
+
+$('#item-response').click(function() {
+    var barangResponse = $(this).val();
+    var $parent = $(this).closest('.parent-response-class');
+
+    $.ajax({
+        type: "POST",
+        url: "/database/barang/live-search",
+        data: {
+            'barang_response' : barangResponse
+        },
+        success: function(data){
+            $parent.find('.barang-response').html(data);
+            $parent.find('.barang-response').append(data.htmlresponse);
+        },
+    });
+});

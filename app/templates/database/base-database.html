@@ -54,8 +54,6 @@
       <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
           <li class="nav-header">DATA TRANSAKSI</li>
           <li class="nav-item">
             {% if penjualan_nav %}
@@ -63,31 +61,58 @@
             {% else %}
             <a href="{{ url_for('datab.penjualan') }}" class="nav-link">
             {% endif %}
-              <i class="nav-icon fas fa-shopping-cart"></i>
+              <i class="nav-icon fas fa-tags"></i>
               <p>
                 Penjualan
               </p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-dolly-flatbed"></i>
+            {% if pembelian_nav %}
+            <a class="nav-link active" disabled>
+            {% else %}
+            <a href="{{ url_for('datab.pembelian') }}" class="nav-link">
+            {% endif %}
+              <i class="nav-icon fas fa-shopping-cart"></i>
               <p>
                 Pembelian
-                <small>(Coming Soon)</small>
               </p>
             </a>
           </li>
-          <li class="nav-header">DATA PARFUM</li>
+          <li class="nav-header">DATA BARANG</li>
           <li class="nav-item">
             {% if aroma_nav %}
             <a class="nav-link active" disabled>
             {% else %}
             <a href="{{ url_for('datab.aroma') }}" class="nav-link">
             {% endif %}
-              <i class="nav-icon fas fa-fire"></i>
+              <i class="nav-icon fas fa-spray-can"></i>
               <p>
-                Aroma Parfum
+                Parfum
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            {% if barang_nav %}
+            <a class="nav-link active" disabled>
+            {% else %}
+            <a href="{{ url_for('datab.barang') }}" class="nav-link">
+            {% endif %}
+              <i class="nav-icon fas fa-flask"></i>
+              <p>
+                Botol & Larutan
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            {% if stock_nav %}
+            <a class="nav-link active" disabled>
+            {% else %}
+            <a href="{{ url_for('datab.stock') }}" class="nav-link">
+            {% endif %}
+              <i class="nav-icon fas fa-box"></i>
+              <p>
+                Stock
               </p>
             </a>
           </li>
@@ -97,9 +122,43 @@
             {% else %}
             <a href="{{ url_for('datab.pabrik') }}" class="nav-link">
             {% endif %}
-              <i class="nav-icon fas fa-dolly"></i>
+              <i class="nav-icon fas fa-industry"></i>
               <p>
                 Pabrik
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            {% if supplier_nav %}
+            <a class="nav-link active" disabled>
+            {% else %}
+            <a href="{{ url_for('datab.supplier') }}" class="nav-link">
+            {% endif %}
+              <i class="nav-icon fas fa-truck"></i>
+              <p>
+                Supplier
+              </p>
+            </a>
+          </li>
+          <li class="nav-header">DATA PELANGGAN</li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-ellipsis-h"></i>
+              <p>
+                Coming Soon
+              </p>
+            </a>
+          </li>
+          <li class="nav-header">DATA LAINNYA</li>
+          <li class="nav-item">
+            {% if ukur_nav %}
+            <a class="nav-link active" disabled>
+            {% else %}
+            <a href="{{ url_for('datab.ukur') }}" class="nav-link">
+            {% endif %}
+              <i class="nav-icon fas fa-ruler-combined"></i>
+              <p>
+                Satuan
               </p>
             </a>
           </li>
