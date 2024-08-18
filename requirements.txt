@@ -1,6 +1,5 @@
 alembic==1.13.2
 altgraph==0.17.4
-auto-py-to-exe==2.44.1
 blinker==1.8.2
 bottle==0.12.25
 bottle-websocket==0.2.9

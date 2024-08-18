@@ -14,6 +14,6 @@ app.run(debug = True)
 
 # https://www.w3schools.com/icons/
 
-# auto-py-to-exe
+# pyinstaller --onefile --icon=app\static\ico\logo-raihan-parfum-dark.ico "Raihan Parfum.py"
 
 # py -m venv env
