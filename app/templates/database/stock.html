@@ -52,7 +52,7 @@
                             <i class="fas fa-search"></i>
                           </a>
                           <a class="btn btn-success btn-sm" href="" data-toggle="modal" data-target="#addmodal">
-                              <i class="fas fa-folder"></i>
+                              <i class="fas fa-plus"></i>
                               Tambah
                           </a>
                         </th>
@@ -122,12 +122,12 @@
   </div>
   <!-- /.content-wrapper -->
 
-  <!-- Modal Add Stock -->
+  <!-- Modal Add Stok -->
   <div id="addmodal" class="modal fade" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title">Tambah Data Stock</h4>
+            <h4 class="modal-title">Tambah Data Stok</h4>
           </div>
           <div class="modal-body card-body register-card-body parent-response-class">
             <form action="{{url_for('datab.stock_add')}}" method="POST">
@@ -155,7 +155,7 @@
                 </div>
               </div>
               <div class="form-group input-group">
-                <input type="number" class="form-control" name="stock" placeholder="Stock">
+                <input type="number" class="form-control" name="stock" placeholder="Stok">
                 <div class="input-group-append">
                   <div class="input-group-text">
                     <span class="nav-icon fas fa-box"></span>
@@ -172,19 +172,19 @@
     </div>
   </div>
 
-  <!-- Modal Edit Stock -->
+  <!-- Modal Edit Stok -->
   {% for row in stock %}
     <div id="editmodal{{ row.id_stock }}" class="modal fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Ubah Data Stock</h4>
+              <h4 class="modal-title">Ubah Data Stok</h4>
             </div>
             <div class="modal-body card-body register-card-body parent-response-class">
               <form action="{{ url_for('datab.stock_edit') }}" method="POST">
                   <div class="form-group input-group">
                     <input type="hidden"  name="id_stock" value="{{ row.id_stock }}">
-                    <input type="number" class="form-control" name="stock" placeholder="Stock" value="{{ row.stock }}">
+                    <input type="number" class="form-control" name="stock" placeholder="Stok" value="{{ row.stock }}">
                     <div class="input-group-append">
                       <div class="input-group-text">
                         <span class="nav-icon fas fa-box"></span>
@@ -202,13 +202,13 @@
     </div>
   {% endfor %}
 
-  <!-- Modal Delete Stock -->
+  <!-- Modal Delete Stok -->
   {% for row in stock %}
     <div id="deletemodal{{row.id_stock}}" class="modal fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Hapus Data Stock</h4>
+              <h4 class="modal-title">Hapus Data Stok</h4>
             </div>
             <div class="modal-body card-body register-card-body">
               <h6><b>Nama</b></h6>
@@ -229,7 +229,7 @@
                   </div>
                 </div>
               </div>
-              <h6><b>Stock</b></h6>
+              <h6><b>Stokk</b></h6>
               <div class="form-group input-group">
                 <input type="number" class="form-control" value="{{ row.stock }}" disabled>
                 <div class="input-group-append">
@@ -251,13 +251,13 @@
     </div>
   {% endfor %}
 
-  <!-- Modal Search Stock -->
+  <!-- Modal Search Stok -->
   {% for row in stock %}
     <div id="searchmodal" class="modal fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Cari Data Stock</h4>
+              <h4 class="modal-title">Cari Data Stok</h4>
             </div>
             <div class="modal-body card-body register-card-body">
               <form action="{{url_for('datab.stock')}}" method="POST">

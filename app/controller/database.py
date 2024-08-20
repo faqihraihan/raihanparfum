@@ -2,8 +2,21 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from app.models.models import Penjualan, Aroma, Pabrik, Stock, Supplier, Barang, Ukur, Pembelian
 from app import db
 from datetime import datetime
+import os
 
 datab = Blueprint('datab', __name__)
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+foto_btl_folder = os.path.join(basedir, '..', 'static', 'img', 'btl')
+
+datab.config = {
+    'FOTO_BTL_FOLDER': foto_btl_folder,
+    'ALLOWED_EXTENSIONS': {'png', 'jpg', 'jpeg'}
+}
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in datab.config['ALLOWED_EXTENSIONS']
 
 
 @datab.route('/database/penjualan', methods=['GET', 'POST'])
@@ -391,17 +404,17 @@ def barang():
 @datab.route('/database/barang/add', methods=['POST'])
 def barang_add():
     if request.method == 'POST':
-        jenis = request.form['jenis']
         nama = request.form['barang']
+        jenis = request.form['jenis']
         toko = request.form['toko']
         harga = request.form['harga']
         ukur = request.form['ukur']
 
         data = Barang(jenis = jenis,
-                     nama = nama,
-                     id_supplier = toko,
-                     harga = harga,
-                     id_ukur = ukur)
+                    nama = nama,
+                    id_supplier = toko,
+                    harga = harga,
+                    id_ukur = ukur)
 
         db.session.add(data)
         db.session.commit()
@@ -440,8 +453,16 @@ def barang_delete():
     id_barang = request.form['id_barang']
     delete = Barang.query.get(id_barang)
 
+    image_filename = delete.foto
+    
     db.session.delete(delete)
     db.session.commit()
+
+    if image_filename:
+        image_path = os.path.join(datab.config['FOTO_BTL_FOLDER'], image_filename)
+        if os.path.isfile(image_path):
+            os.remove(image_path)
+
     flash("Data berhasil dihapus", 'success')
 
     return redirect(url_for('datab.barang'))
@@ -454,6 +475,74 @@ def barang_response():
         barang = db.session.query(Barang).filter(Barang.jenis.like(jenis))
 
     return jsonify({'htmlresponse': render_template('database/barang-response.html', barang = barang)})
+
+
+@datab.route('/database/barang/foto/add', methods=['POST'])
+def barang_add_foto():
+    if request.method == 'POST':
+        id = request.form['id_barang']
+        file = request.files['image']
+
+        if not allowed_file(file.filename):
+            flash('Tipe gambar tidak sesuai', 'info')
+            return redirect(url_for('datab.barang'))
+        
+        extension = file.filename.rsplit('.', 1)[1].lower()
+        new_filename = f"{id}.{extension}"
+        filepath = os.path.join(datab.config['FOTO_BTL_FOLDER'], new_filename)
+        file.save(filepath)
+
+        update = Barang.query.get(request.form.get('id_barang'))
+        update.foto = new_filename
+
+        db.session.commit()
+        flash('Foto berhasil ditambahkan', 'success')
+
+        return redirect(url_for('datab.barang'))
+
+
+@datab.route("/database/barang/foto/edit", methods=['GET', 'POST'])
+def barang_edit_foto():
+    if request.method == 'POST':
+        update = Barang.query.get(request.form.get('id_barang'))
+        file = request.files['image']
+
+        if not allowed_file(file.filename):
+            flash('Tipe gambar tidak sesuai', 'info')
+            return redirect(url_for('datab.barang'))
+
+        image_filename = update.foto
+        
+        if file:
+            image_path = os.path.join(datab.config['FOTO_BTL_FOLDER'], image_filename)
+            if os.path.isfile(image_path):
+                os.remove(image_path)
+
+            file.save(image_path)
+
+        flash("Foto berhasil diubah", 'success')
+
+        return redirect(url_for('datab.barang'))
+
+
+@datab.route("/database/barang/foto/delete", methods=['GET', 'POST'])
+def barang_delete_foto():
+    id_barang = request.form['id_barang']
+    barang = Barang.query.get(id_barang)
+
+    image_filename = barang.foto
+    
+    barang.foto = None
+    db.session.commit()
+
+    if image_filename:
+        image_path = os.path.join(datab.config['FOTO_BTL_FOLDER'], image_filename)
+        if os.path.isfile(image_path):
+            os.remove(image_path)
+
+    flash("Foto berhasil dihapus", 'success')
+
+    return redirect(url_for('datab.barang'))
 
 
 @datab.route('/database/ukuran', methods=['GET', 'POST'])

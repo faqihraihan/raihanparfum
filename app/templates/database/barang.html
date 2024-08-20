@@ -1,5 +1,9 @@
 {% extends 'database/base-database.html' %}
 
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/ekko-lightbox/ekko-lightbox.css') }}">
+{% endblock %}
+
 {% block body %}
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -36,7 +40,7 @@
             <table class="table table-striped projects">
                 <thead>
                     <tr>
-                        <th style="width: 50%">
+                        <th style="width: 35%">
                           Nama Barang
                         </th>
                         <th style="width: 15%">
@@ -45,9 +49,12 @@
                         <th style="width: 15%">
                           Harga
                         </th>
+                        <th style="width: 15%">
+                          Foto
+                        </th>
                         <th style="width: 20%" class="text-right">
                           <a class="btn btn-success btn-sm" href="" data-toggle="modal" data-target="#addmodal">
-                              <i class="fas fa-folder"></i>
+                              <i class="fas fa-plus"></i>
                               Tambah
                           </a>
                         </th>
@@ -59,12 +66,44 @@
                           <td>{{ row.nama }} <small class="capitalize">({{ row.jenis }})</small></td>
                           <td>{{ row.supplier.nama }}</td>
                           <td>Rp. {{ "{:0,.0f}".format(row.harga).replace(',', '.') }} <small>/{{ row.ukur.nama }}</small></td>
+                          {% if row.jenis == 'botol' %}
+                            {% if row.foto %}
+                              <td>
+                                <a class="btn btn-info btn-sm foto" href="{{ url_for('static', filename='img/btl/' ~ row.foto) }}" data-toggle="lightbox" data-title="{{ row.nama }}">
+                                    <i class="fas fa-camera"></i>
+                                </a>
+                                <div class="btn-group btn-group-sm">
+                                  <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#fotoeditmodal{{ row.id_barang }}">
+                                      <i class="fas fa-pencil-alt"></i>
+                                  </a>
+                                  <form action="{{url_for('datab.barang_delete_foto')}}" method="post" style="display:inline;">
+                                    <input type="hidden"  name="id_barang" value="{{ row.id_barang }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                  </form>
+                                  <!-- <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#fotodeletemodal{{ row.id_barang }}">
+                                      <i class="fas fa-trash"></i>
+                                  </a> -->
+                                </div>
+                              </td>
+                            {% else %}
+                              <td>
+                                <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#fotoaddmodal{{ row.id_barang }}">
+                                    <i class="fas fa-plus"></i>
+                                </a>
+                              </td>
+                            {% endif %}
+                          {% else %}
+                            <td>
+                            </td>
+                          {% endif %}
                           <td class="text-right">
                               <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editmodal{{ row.id_barang }}">
                                   <i class="fas fa-pencil-alt"></i>
                                   Ubah
                               </a>
-                              <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deletemodal{{row.id_barang}}">
+                              <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deletemodal{{ row.id_barang }}">
                                   <i class="fas fa-trash"></i>
                                   Hapus
                               </a>
@@ -337,4 +376,76 @@
       </div>
     </div>
   {% endfor %}
+
+  <!-- Modal Add Foto -->
+  {% for row in barang %}
+    <div id="fotoaddmodal{{ row.id_barang }}" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Tambah Foto</h4>
+            </div>
+            <div class="modal-body card-body register-card-body">
+              <form action="{{url_for('datab.barang_add_foto')}}" method="POST" enctype="multipart/form-data">
+                <div class="form-group input-group custom-file">
+                  <input type="hidden"  name="id_barang" value="{{ row.id_barang }}">
+                  <input type="file" class="custom-file-input" id="exampleInputFile" name="image" accept="image/*" required>
+                  <label class="custom-file-label" for="exampleInputFile">Pilih Foto</label>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn btn-primary btn-success" type="submit">Tambah</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                </div>
+              </form>
+            </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+  <!-- Modal Edit Foto -->
+  {% for row in barang %}
+    <div id="fotoeditmodal{{ row.id_barang }}" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Ubah Foto</h4>
+            </div>
+            <div class="modal-body card-body register-card-body">
+              <form action="{{url_for('datab.barang_edit_foto')}}" method="POST" enctype="multipart/form-data">
+                <div class="form-group input-group custom-file">
+                  <input type="hidden" name="id_barang" value="{{ row.id_barang }}">
+                  <input type="file" class="custom-file-input" id="exampleInputFile" name="image" accept="image/*" required>
+                  <label class="custom-file-label" for="exampleInputFile">Pilih Foto</label>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn btn-primary btn-success" type="submit">Ubah</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                </div>
+              </form>
+            </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='plugins/ekko-lightbox/ekko-lightbox.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
+
+<script>
+  $(function () {
+    $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+      event.preventDefault();
+      $(this).ekkoLightbox({
+        alwaysShowClose: true
+      });
+    });
+  })
+  
+  $(function () {
+    bsCustomFileInput.init();
+  });
+</script>
 {% endblock %}

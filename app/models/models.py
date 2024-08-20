@@ -50,6 +50,7 @@ class Barang(db.Model):
     nama = db.Column(db.String(20))
     jenis = db.Column(db.String(20))
     harga = db.Column(db.Integer())
+    foto = db.Column(db.String(20))
 
     pembelian_rs = db.relationship("Pembelian", backref="barang")
 

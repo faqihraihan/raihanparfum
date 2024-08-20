@@ -62,3 +62,11 @@ h6.flash.r, div.alert.r {
 .item {
     display: none;
 }
+
+.custom-file {
+    margin-bottom: 1rem !important;
+}
+
+a.foto {
+    margin-right: 10px;
+}
