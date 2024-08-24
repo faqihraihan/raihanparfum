@@ -67,7 +67,7 @@
                             </small>
                           </td>
                           <td>{{ row.qty }} ml</td>
-                          <td>Rp. {{ "{:0,.0f}".format(row.harga).replace(',', '.') }}</td>
+                          <td>{{ row.harga | format_rupiah }}</td>
                           <td class="text-right">
                               <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editmodal{{ row.id_penjualan }}">
                                   <i class="fas fa-pencil-alt"></i>
@@ -151,6 +151,19 @@
                 <div class="input-group-append">
                   <div class="input-group-text">
                     <span class="nav-icon fas fa-calendar"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group input-group">
+                <select name="pelanggan" class="form-control"> 
+                  <option value="" disabled selected hidden>Nama Pelanggan</option>  
+                  {% for row in pelanggan %} 
+                    <option value="{{ row.id_pelanggan }}">{{ row.telp }} | {{ row.nama }}</option>
+                  {% endfor %}
+                </select>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-id-badge"></span>
                   </div>
                 </div>
               </div>

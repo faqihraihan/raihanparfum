@@ -1,0 +1,233 @@
+{% extends 'pelanggan/base-pelanggan.html' %}
+
+{% block body %}
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              {% if category == 'success'%}
+                <div class="alert alert-{{ category }} alert-dismissible r">
+                  <button type="button" class="close r" data-dismiss="alert" aria-hidden="true">×</button>
+                  <h6 class="flash r"><i class="icon fas fa-check"></i> {{ message }}</h6>
+                </div>
+              {% else %}
+                <div class="alert alert-{{ category }} alert-dismissible r">
+                  <button type="button" class="close r" data-dismiss="alert" aria-hidden="true">×</button>
+                  <h6 class="flash r"><i class="icon fas fa-info"></i> {{ message }}</h6>
+                </div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+
+        <!-- Default box -->
+        <div class="card">
+          <div class="card-body p-0">
+            <table class="table table-striped projects">
+                <thead>
+                    <tr>
+                        <th style="width: 15%">
+                          ID
+                        </th>
+                        <th style="width: 25%">
+                          Nama
+                        </th>
+                        <th style="width: 16%">
+                          No. HP
+                        </th>
+                        <th style="width: 26%">
+                          Alamat
+                        </th>
+                        <th style="width: 18%" class="text-right">
+                          <a class="btn btn-success btn-sm" href="" data-toggle="modal" data-target="#addmodal">
+                              <i class="fas fa-plus"></i>
+                              Tambah
+                          </a>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                  {% for row in pelanggan %}
+                      <tr>
+                          <td>{{ row.id_pelanggan }}</td>
+                          <td><a class="customer-link" href="{{ url_for('cust.purchase_history', id_pelanggan=row.id_pelanggan) }}">{{ row.nama }}</a></td>
+                          <td>{{ row.telp | format_telp }}</td>
+                          <td>{{ row.alamat }}</td>
+                          <td class="text-right">
+                              <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editmodal{{ row.id_pelanggan }}">
+                                  <i class="fas fa-pencil-alt"></i>
+                                  Ubah
+                              </a>
+                              <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deletemodal{{row.id_pelanggan}}">
+                                  <i class="fas fa-trash"></i>
+                                  Hapus
+                              </a>
+                          </td>
+                      </tr>
+                  {% endfor %}
+                </tbody>
+            </table>
+          </div>
+          <!-- /.card-body -->
+
+        </div>
+        <!-- /.card -->
+
+      </div>
+    </section>
+    <!-- /.content -->
+
+    <a id="back-to-top" href="#" class="btn btn-primary back-to-top" role="button" aria-label="Scroll to top">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+  <!-- /.content-wrapper -->
+
+  <!-- Modal Add Pelanggan -->
+  <div id="addmodal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Tambah Data Pelanggan</h4>
+          </div>
+          <div class="modal-body card-body register-card-body parent-response-class">
+            <form action="{{url_for('cust.pelanggan_add')}}" method="POST">
+              <div class="form-group input-group">
+                <input type="text" class="form-control" name="nama" placeholder="Nama">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-id-badge"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group input-group">
+                <input type="number" class="form-control" name="telp" placeholder="No. HP">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-mobile-alt"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group input-group">
+                <input type="text" class="form-control" name="alamat" placeholder="Alamat">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-map-marker-alt"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-primary btn-success" type="submit">Tambah</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+              </div>
+            </form>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Edit Pelanggan -->
+  {% for row in pelanggan %}
+    <div id="editmodal{{ row.id_pelanggan }}" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Ubah Data Pelanggan</h4>
+            </div>
+            <div class="modal-body card-body register-card-body parent-response-class">
+              <form action="{{ url_for('cust.pelanggan_edit') }}" method="POST">
+                  <div class="form-group input-group">
+                    <input type="hidden"  name="id_pelanggan" value="{{ row.id_pelanggan }}">
+                    <input type="text" class="form-control" name="nama" placeholder="Nama" value="{{ row.nama }}">
+                    <div class="input-group-append">
+                      <div class="input-group-text">
+                        <span class="nav-icon fas fa-id-badge"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group input-group">
+                    <input type="number" class="form-control" name="telp" placeholder="No. HP" value="{{ row.telp }}">
+                    <div class="input-group-append">
+                      <div class="input-group-text">
+                        <span class="nav-icon fas fa-mobile-alt"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group input-group">
+                    <input type="text" class="form-control" name="alamat" placeholder="Alamat" value="{{ row.alamat }}">
+                    <div class="input-group-append">
+                      <div class="input-group-text">
+                        <span class="nav-icon fas fa-map-marker-alt"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn btn-primary btn-wrn" type="submit">Ubah</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                  </div>
+              </form>
+            </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+  <!-- Modal Delete Pelanggan -->
+  {% for row in pelanggan %}
+    <div id="deletemodal{{row.id_pelanggan}}" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Hapus Data Pelanggan</h4>
+            </div>
+            <div class="modal-body card-body register-card-body">
+              <h6><b>Nama</b></h6>
+              <div class="form-group input-group">
+                <input type="text" class="form-control" value="{{ row.nama }}" disabled>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-id-badge"></span>
+                  </div>
+                </div>
+              </div>
+              <h6><b>No. HP</b></h6>
+              <div class="form-group input-group">
+                <input type="text" class="form-control" value="{{ row.telp }}" disabled>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-mobile-alt"></span>
+                  </div>
+                </div>
+              </div>
+              <h6><b>Alamat</b></h6>
+              <div class="form-group input-group">
+                <input type="text" class="form-control" value="{{ row.alamat }}" disabled>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-map-marker-alt"></span>
+                  </div>
+                </div>
+              </div>
+              <form action="{{ url_for('cust.pelanggan_delete') }}" method="POST">
+                  <div class="modal-footer">
+                    <input type="hidden"  name="id_pelanggan" value="{{ row.id_pelanggan }}">
+                    <button class="btn btn-primary btn-dgr" type="submit">Hapus</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                  </div>
+              </form>
+            </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}

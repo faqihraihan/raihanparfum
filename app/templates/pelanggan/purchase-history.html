@@ -1,0 +1,95 @@
+{% extends 'pelanggan/base-pelanggan.html' %}
+
+{% block body %}
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              {% if category == 'success'%}
+                <div class="alert alert-{{ category }} alert-dismissible r mb-3">
+                  <button type="button" class="close r" data-dismiss="alert" aria-hidden="true">×</button>
+                  <h6 class="flash r"><i class="icon fas fa-check"></i> {{ message }}</h6>
+                </div>
+              {% else %}
+                <div class="alert alert-{{ category }} alert-dismissible r mb-3">
+                  <button type="button" class="close r" data-dismiss="alert" aria-hidden="true">×</button>
+                  <h6 class="flash r"><i class="icon fas fa-info"></i> {{ message }}</h6>
+                </div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        {% if created %}
+          <div class="row mb-2">
+            <div class="d-flex align-items-center col-sm-6">
+              <a class="btn btn-primary btn-sm" href="{{ url_for('cust.purchase_history') }}">
+                <i class="fas fa-arrow-left"></i> Kembali
+              </a>
+              <h1 class="title-purchase-history">{{ data.nama }}</h1>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item active"><i class="fas fa-mobile-alt purchase_history"></i> {{ data.telp | format_telp }}</li>
+                <li class="breadcrumb-item active"><i class="fas fa-map-marker-alt purchase_history"></i> {{ data.alamat }}</li>
+              </ol>
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        {% endif %}
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+
+        <!-- Timelime example  -->
+        <div class="row">
+          <div class="col-md-12">
+            <!-- The time line -->
+            <div class="timeline">
+              <!-- timeline item -->
+              {% if created %}
+                {% for row in purchase_history_data %}
+                  <div>
+                    <i class="fas fa-tags bg-primary r"></i>
+                    <div class="timeline-item">
+                      <span class="time"><i class="fas fa-clock"></i> {{ row.date }}</span>
+                      <h3 class="timeline-header"><span>{{ row.aroma }}</span> <small>({{ row.pabrik }})</small></h3>
+                      <div class="timeline-body">
+                        <i class="fas fa-boxes purchase_history"></i> Qty: {{ row.qty }}ml</br>
+                        <i class="fas fa-money-bill purchase_history"></i> Harga: {{ row.harga | format_rupiah }}
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+                <!-- END timeline item -->
+                <div>
+                  <i class="fa fa-check-circle bg-success"></i>
+                  <div class="timeline-item">
+                    <span class="time"><i class="fas fa-clock"></i> {{ created }}</span>
+                    <h3 class="timeline-header r">Terdaftar di Raihan Parfum</h3>
+                  </div>
+                </div>
+                <div>
+                  <i class="fas fa-clock bg-gray"></i>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+          <!-- /.col -->
+        </div>
+      </div>
+      <!-- /.timeline -->
+
+    </section>
+    <!-- /.content -->
+
+    <a id="back-to-top" href="#" class="btn btn-primary back-to-top" role="button" aria-label="Scroll to top">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+  <!-- /.content-wrapper -->
+{% endblock %}

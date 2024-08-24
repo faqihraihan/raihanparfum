@@ -65,7 +65,7 @@
                       <tr>
                           <td>{{ row.nama }} <small class="capitalize">({{ row.jenis }})</small></td>
                           <td>{{ row.supplier.nama }}</td>
-                          <td>Rp. {{ "{:0,.0f}".format(row.harga).replace(',', '.') }} <small>/{{ row.ukur.nama }}</small></td>
+                          <td>{{ row.harga | format_rupiah }} <small>/{{ row.ukur.nama }}</small></td>
                           {% if row.jenis == 'botol' %}
                             {% if row.foto %}
                               <td>
@@ -89,7 +89,7 @@
                               </td>
                             {% else %}
                               <td>
-                                <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#fotoaddmodal{{ row.id_barang }}">
+                                <a class="btn btn-success btn-sm" data-toggle="modal" data-target="#fotoaddmodal{{ row.id_barang }}">
                                     <i class="fas fa-plus"></i>
                                 </a>
                               </td>

@@ -32,13 +32,13 @@
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link r disabled">Dashboard</a>
+        <a href="{{ url_for('dashb.dashboard') }}" class="nav-link">Dashboard</a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
         <a href="{{ url_for('datab.penjualan') }}" class="nav-link">Database</a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="{{ url_for('cust.pelanggan') }}" class="nav-link">Pelanggan</a>
+        <a href="#" class="nav-link r disabled">Pelanggan</a>
       </li>
     </ul>
   </nav>
@@ -57,20 +57,28 @@
       <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <li class="nav-header">DASHBOARD</li>
+          <li class="nav-header">DATA PELANGGAN</li>
           <li class="nav-item">
-            <a href="#" class="nav-link active disabled">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
+            {% if pelanggan_nav %}
+            <a class="nav-link active" disabled>
+            {% else %}
+            <a href="{{ url_for('cust.pelanggan') }}" class="nav-link">
+            {% endif %}
+              <i class="nav-icon fas fa-id-badge"></i>
               <p>
-                Dashboard
+                Pelanggan
               </p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-ellipsis-h"></i>
+            {% if purchase_history_nav %}
+            <a class="nav-link active" disabled>
+            {% else %}
+            <a href="{{ url_for('cust.purchase_history') }}" class="nav-link">
+            {% endif %}
+              <i class="nav-icon fas fa-clipboard-list"></i>
               <p>
-                Coming Soon
+                Riwayat Pembelian
               </p>
             </a>
           </li>
@@ -108,14 +116,12 @@
 <script src="{{ url_for('static', filename='plugins/raphael/raphael.min.js') }}"></script>
 <script src="{{ url_for('static', filename='plugins/jquery-mapael/jquery.mapael.min.js') }}"></script>
 <script src="{{ url_for('static', filename='plugins/jquery-mapael/maps/usa_states.min.js') }}"></script>
-<!-- ChartJS -->
-<script src="{{ url_for('static', filename='plugins/chart.js/Chart.min.js') }}"></script>
 
 <!-- AdminLTE for demo purposes -->
 <script src="{{ url_for('static', filename='dist/js/demo.js') }}"></script>
 
 <!-- Raihan Parfum js -->
-<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/pelanggan.js') }}"></script>
 
 {% block scripts %}{% endblock %}
 </body>

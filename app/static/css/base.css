@@ -70,3 +70,67 @@ h6.flash.r, div.alert.r {
 a.foto {
     margin-right: 10px;
 }
+
+.bg-primary.r {
+    background-color: #3f6791 !important;
+}
+
+i.purchase_history {
+    margin-right: 7px;
+    color: #adb5bd;
+}
+
+.timeline-header.r {
+    border: None !important;
+}
+
+.timeline-header span {
+    font-weight: 600;
+    color: #fff;
+}
+
+.customer-link {
+    color: rgb(255 255 255 / 100%);
+}
+
+.customer-link:hover {
+    color: rgb(255 255 255 / 80%) !important;
+}
+
+.title-purchase-history {
+    margin-left: 25px !important;
+}
+
+.select2-selection.select2-selection--single {
+    height: calc(2.25rem + 2px) !important;
+}
+
+.select2-selection__arrow {
+    height: 35px !important;
+}
+
+.ph-search {
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.title-ph-search {
+    margin-bottom: 40px;
+}
+
+.select2-selection__rendered {
+    color: #fff !important;
+}
+
+.select2-selection--single {
+    background-color: #343a40 !important;
+    border-color: #6c757d !important;
+}
+
+.select2-results__option--highlighted {
+    background-color: #3f6791 !important;
+}
+
+.select2-results__option--highlighted:hover {
+    background-color: #335476 !important;
+}

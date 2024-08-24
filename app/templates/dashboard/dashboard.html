@@ -20,7 +20,7 @@
           <div class="card-body">
             <div class="d-flex">
               <p class="d-flex flex-column">
-                <span class="text-bold text-lg">Rp. {{ "{:0,.2f}".format(total_this_month).replace(',', 'x').replace('.', ',').replace('x', '.') }}</span>
+                <span class="text-bold text-lg">{{ total_this_month | format_rupiah_full }}</span>
                 <span>Total Penjualan Bulan Ini</span>
               </p>
               <p class="ml-auto d-flex flex-column text-right">
@@ -52,7 +52,7 @@
               <div class="col-sm-3 col-6">
                 <div class="description-block border-right">
                   <span class="description-percentage text-{{ status_today }}"><i class="fas fa-caret-{{ icon_today }}"></i> {{ result_today }}%</span>
-                  <h5 class="description-header">Rp. {{ "{:0,.2f}".format(total_today).replace(',', 'x').replace('.', ',').replace('x', '.') }}</h5>
+                  <h5 class="description-header">{{ total_today | format_rupiah_full }}</h5>
                   <span class="description-text">Hari Ini</span>
                 </div>
                 <!-- /.description-block -->
@@ -61,7 +61,7 @@
               <div class="col-sm-3 col-6">
                 <div class="description-block border-right">
                   <span class="description-percentage text-{{ status_week }}"><i class="fas fa-caret-{{ icon_week }}"></i> {{ result_week }}%</span>
-                  <h5 class="description-header">Rp. {{ "{:0,.2f}".format(total_this_week).replace(',', 'x').replace('.', ',').replace('x', '.') }}</h5>
+                  <h5 class="description-header">{{ total_this_week | format_rupiah_full }}</h5>
                   <span class="description-text">Minggu Ini</span>
                 </div>
                 <!-- /.description-block -->
@@ -70,7 +70,7 @@
               <div class="col-sm-3 col-6">
                 <div class="description-block border-right">
                   <span class="description-percentage text-{{ status_month }}"><i class="fas fa-caret-{{ icon_month }}"></i> {{ result_month }}%</span>
-                  <h5 class="description-header">Rp. {{ "{:0,.2f}".format(total_this_month).replace(',', 'x').replace('.', ',').replace('x', '.') }}</h5>
+                  <h5 class="description-header">{{ total_this_month | format_rupiah_full }}</h5>
                   <span class="description-text">Bulan Ini</span>
                 </div>
                 <!-- /.description-block -->
@@ -79,7 +79,7 @@
               <div class="col-sm-3 col-6">
                 <div class="description-block">
                   <span class="description-percentage text-{{ status_year }}"><i class="fas fa-caret-{{ icon_year }}"></i> {{ result_year }}%</span>
-                  <h5 class="description-header">Rp. {{ "{:0,.2f}".format(total_this_year).replace(',', 'x').replace('.', ',').replace('x', '.') }}</h5>
+                  <h5 class="description-header">{{ total_this_year | format_rupiah_full }}</h5>
                   <span class="description-text">Tahun Ini</span>
                 </div>
                 <!-- /.description-block -->
@@ -99,8 +99,4 @@
     </a>
   </div>
   <!-- /.content-wrapper -->
-{% endblock %}
-
-{% block scripts %}
-  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %}

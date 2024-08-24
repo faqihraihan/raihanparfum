@@ -86,7 +86,11 @@ fetch('/api/penjualan-sebulan')
                         display: false
                       },
                       ticks: {
-                        fontColor: '#adb5bd'
+                        fontColor: '#adb5bd',
+                        callback: function(value, index) {
+                            // Menampilkan hanya setiap 2 nilai
+                            return index % 2 === 0 ? value : '';
+                        }
                             }
                     }],
                     yAxes: [{
@@ -95,7 +99,7 @@ fetch('/api/penjualan-sebulan')
                       },
                       ticks: {
                         fontColor: '#adb5bd',
-                        callback: function(value, index, values) {
+                        callback: function(value) {
                           return formatRupiah(value);
                         }
                       }

@@ -21,7 +21,7 @@
 
   {% block head %}{% endblock %}
 </head>
-<body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+<body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed">
 <div class="wrapper">
 
   <!-- Navbar -->
@@ -36,6 +36,9 @@
       </li>
       <li class="nav-item d-none d-sm-inline-block">
         <a href="#" class="nav-link r disabled">Database</a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="{{ url_for('cust.pelanggan') }}" class="nav-link">Pelanggan</a>
       </li>
     </ul>
   </nav>
@@ -137,15 +140,6 @@
               <i class="nav-icon fas fa-truck"></i>
               <p>
                 Supplier
-              </p>
-            </a>
-          </li>
-          <li class="nav-header">DATA PELANGGAN</li>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-ellipsis-h"></i>
-              <p>
-                Coming Soon
               </p>
             </a>
           </li>

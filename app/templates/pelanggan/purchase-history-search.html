@@ -1,0 +1,57 @@
+{% extends 'pelanggan/base-pelanggan.html' %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/select2/css/select2.min.css') }}">
+{% endblock %}
+
+{% block body %}
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <h2 class="text-center display-4 title-ph-search">Pelanggan Raihan Parfum</h2>
+            <form action="" method="POST" id="searchForm">
+                <div class="row ph-search">
+                    <div class="col-11">
+                        <div class="form-group">
+                            <select class="select2" name="id_pelanggan" id="id_pelanggan" style="width: 100%;" required>
+                                <option value="" disabled selected hidden>Cari Data...</option> 
+                                {% for row in pelanggan %} 
+                                  <option value="{{ row.id_pelanggan }}">{{ row.id_pelanggan }} | {{ row.nama }} {% if row.telp %}| {{ row.telp | format_telp }}{% endif %}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-1">
+                      <div class="form-group">
+                        <button class="btn btn-primary" type="submit"><i class="fas fa-paper-plane"></i></button>
+                      </div>
+                  </div>
+                </div>
+            </form>
+        </div>
+    </section>
+    <!-- /.content -->
+
+    <a id="back-to-top" href="#" class="btn btn-primary back-to-top" role="button" aria-label="Scroll to top">
+      <i class="fas fa-chevron-up"></i>
+    </a>
+  </div>
+  <!-- /.content-wrapper -->
+{% endblock %}
+
+{% block scripts %}
+<!-- Select2 -->
+<script src="{{ url_for('static', filename='plugins/select2/js/select2.full.min.js') }}"></script>
+<script>
+    $(function () {
+      $('.select2').select2()
+    });
+</script>
+{% endblock %}

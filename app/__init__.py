@@ -7,6 +7,7 @@ app = Flask(__name__)
 
 app.config.from_pyfile('config.py')
 
+
 convention = {
   "ix": "ix_%(column_0_label)s",
   "uq": "uq_%(table_name)s_%(column_0_name)s",
@@ -20,8 +21,28 @@ db = SQLAlchemy(app, metadata = metadata)
 
 migrate = Migrate(app, db)
 
+
 from .controller.dashboard import dashb
 app.register_blueprint(dashb)
 
 from .controller.database import datab
 app.register_blueprint(datab)
+
+from .controller.pelanggan import cust
+app.register_blueprint(cust)
+
+
+def format_telp(value):
+    return '-'.join([value[i:i+4] for i in range(0, len(value), 4)])
+
+app.jinja_env.filters['format_telp'] = format_telp
+
+def format_rupiah(value):
+    return "Rp. {:0,.0f}".format(value).replace(',', '.')
+
+app.jinja_env.filters['format_rupiah'] = format_rupiah
+
+def format_rupiah_full(value):
+    return "Rp. {:0,.2f}".format(value).replace(',', 'x').replace('.', ',').replace('x', '.')
+
+app.jinja_env.filters['format_rupiah_full'] = format_rupiah_full

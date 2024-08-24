@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
-from app.models.models import Penjualan, Aroma, Pabrik, Stock, Supplier, Barang, Ukur, Pembelian
+from app.models.models import Penjualan, Aroma, Pabrik, Stock, Supplier, Barang, Ukur, Pembelian, Pelanggan, Log_pelanggan
 from app import db
 from datetime import datetime
 import os
+from sqlalchemy import func
 
 datab = Blueprint('datab', __name__)
 
@@ -24,8 +25,9 @@ def penjualan():
 
     penjualan = db.session.query(Penjualan).order_by(Penjualan.id_penjualan.desc()).limit(20).all()
     pabrik = db.session.query(Pabrik).all()
+    pelanggan = db.session.query(Pelanggan).all()
 
-    return render_template('database/penjualan.html', penjualan_nav = 'active', penjualan = penjualan, pabrik = pabrik)
+    return render_template('database/penjualan.html', penjualan_nav = 'active', penjualan = penjualan, pabrik = pabrik, pelanggan = pelanggan)
 
 
 @datab.route('/database/penjualan/add', methods=['POST'])
@@ -38,18 +40,44 @@ def penjualan_add():
         date = request.form['date']
 
         date_object = datetime.strptime(date, '%Y-%m-%d')
+        
+        id_pelanggan = request.form.get('pelanggan')
+        
+        now = datetime.now()
+        year = now.strftime("%y")
+        month = now.strftime("%m")
+
+        last_penjualan = db.session.query(Penjualan).filter(
+            func.strftime('%Y-%m', Penjualan.created_at) == now.strftime('%Y-%m')
+            ).order_by(Penjualan.id_penjualan.desc()).first()
+
+        if last_penjualan:
+            last_id_str = last_penjualan.id_penjualan[-5:]
+            last_id_number = int(last_id_str)
+            new_id_number = last_id_number + 1
+        else:
+            new_id_number = 10001
+
+        id_penjualan = f"S{year}{month}{new_id_number}"
 
         stock_item = Stock.query.filter_by(id_aroma = id_aroma).first()
         if stock_item:
             if stock_item.stock >= qty:
                 stock_item.stock -= qty
 
-                data = Penjualan(id_pabrik = id_pabrik,
+                data = Penjualan(id_penjualan = id_penjualan,
+                            id_pabrik = id_pabrik,
                             id_aroma = id_aroma,
                             qty = qty,
                             harga = harga,
                             date = date_object)
+                
+                if id_pelanggan:
+                    log = Log_pelanggan(id_pelanggan = id_pelanggan,
+                                        id_penjualan = id_penjualan)
 
+                    db.session.add(log)
+                    
                 db.session.add(data)
                 db.session.commit()
                 flash('Data berhasil ditambahkan', 'success')
@@ -607,27 +635,34 @@ def pembelian_add():
         id_aroma = request.form.get('aroma')
         id_barang = request.form.get('barang')
         id_supplier = request.form['toko']
-        qty = int(request.form['qty'])
+        qty_list = request.form.getlist('qty')
+        # qty = int(request.form['qty'])
         harga = request.form['harga']
         date = request.form['date']
 
         date_object = datetime.strptime(date, '%Y-%m-%d')
 
+        selected_qty = None
+        for qty_str in qty_list:
+            if qty_str:
+                selected_qty = int(qty_str)
+                break
+
         if id_aroma:
             stock_item = Stock.query.filter_by(id_aroma = id_aroma).first()
             if stock_item:
-                stock_item.stock += qty
+                stock_item.stock += selected_qty
                 flash('Data berhasil ditambahkan', 'success')
 
             else:
                 stock = Stock(id_pabrik = id_pabrik,
                                 id_aroma = id_aroma,
-                                stock = qty)
+                                stock = selected_qty)
                 
                 db.session.add(stock)
 
             data = Pembelian(id_aroma = id_aroma,
-                        qty = qty,
+                        qty = selected_qty,
                         harga = harga,
                         date = date_object,
                         id_supplier = id_supplier)
@@ -636,7 +671,7 @@ def pembelian_add():
             db.session.commit()
         else:
             data = Pembelian(id_barang = id_barang,
-                        qty = qty,
+                        qty = selected_qty,
                         harga = harga,
                         date = date_object,
                         id_supplier = id_supplier)
@@ -650,10 +685,12 @@ def pembelian_add():
 @datab.route("/database/pembelian/delete", methods=['GET', 'POST'])
 def pembelian_delete():
     id_pembelian = request.form['id_pembelian']
+    id_aroma = request.form.get('aroma')
     delete = Pembelian.query.get(id_pembelian)
 
-    stock_item = Stock.query.filter_by(id_aroma = delete.id_aroma).first()
-    stock_item.stock -= delete.qty
+    if id_aroma:
+        stock_item = Stock.query.filter_by(id_aroma = delete.id_aroma).first()
+        stock_item.stock -= delete.qty
 
     db.session.delete(delete)
     db.session.commit()

@@ -42,6 +42,15 @@ document.getElementById('item-response').addEventListener('change', function() {
       requiredInputs.forEach(function(input) {
         input.removeAttribute('required');
       });
+
+      var inputs = item.querySelectorAll('select, input');
+      inputs.forEach(function(input) {
+          if (input.tagName.toLowerCase() === 'select') {
+              input.selectedIndex = 0;
+          } else if (input.type === 'number' || input.type === 'text' || input.type === 'date') {
+              input.value = '';
+          }
+      });
   });
 
   var selectedValue = this.value;
