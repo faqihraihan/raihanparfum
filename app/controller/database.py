@@ -64,19 +64,27 @@ def penjualan_add():
         if stock_item:
             if stock_item.stock >= qty:
                 stock_item.stock -= qty
-
-                data = Penjualan(id_penjualan = id_penjualan,
-                            id_pabrik = id_pabrik,
-                            id_aroma = id_aroma,
-                            qty = qty,
-                            harga = harga,
-                            date = date_object)
                 
                 if id_pelanggan:
                     log = Log_pelanggan(id_pelanggan = id_pelanggan,
                                         id_penjualan = id_penjualan)
 
                     db.session.add(log)
+
+                    data = Penjualan(id_penjualan = id_penjualan,
+                                id_pabrik = id_pabrik,
+                                id_aroma = id_aroma,
+                                qty = qty,
+                                harga = harga,
+                                date = date_object,
+                                id_pelanggan = id_pelanggan)
+                else:
+                    data = Penjualan(id_penjualan = id_penjualan,
+                                id_pabrik = id_pabrik,
+                                id_aroma = id_aroma,
+                                qty = qty,
+                                harga = harga,
+                                date = date_object)
                     
                 db.session.add(data)
                 db.session.commit()
@@ -95,6 +103,7 @@ def penjualan_add():
 def penjualan_edit():
     if request.method == 'POST':
         update = Penjualan.query.get(request.form.get('id_penjualan'))
+        log_pelanggan = Log_pelanggan.query.filter_by(id_penjualan = request.form.get('id_penjualan')).first()
 
         old_qty = update.qty
         old_aroma = update.id_aroma
@@ -105,6 +114,7 @@ def penjualan_edit():
         update.harga = request.form['harga']
         date = request.form['date']
         date_object = datetime.strptime(date, '%Y-%m-%d')
+        pelanggan = request.form.get('pelanggan')
 
         if pabrik:
             update.id_pabrik = pabrik
@@ -114,8 +124,17 @@ def penjualan_edit():
 
         update.qty = qty
         update.date = date_object
-        
-        if aroma:
+
+        if pelanggan != update.id_pelanggan:
+            update.id_pelanggan = pelanggan
+
+            if log_pelanggan:
+                log_pelanggan.id_pelanggan = pelanggan
+            else:
+                new_log_pelanggan = Log_pelanggan(id_pelanggan = pelanggan, id_penjualan = update.id_penjualan)
+                db.session.add(new_log_pelanggan)
+
+        if aroma: # Parfum
             new_stock = Stock.query.filter_by(id_aroma = aroma).first()
             if new_stock:
                 new_stock.stock += qty
@@ -124,7 +143,7 @@ def penjualan_edit():
                 flash("Belum ada data stock aroma ini", 'primary')
                 return redirect(url_for('datab.penjualan'))
 
-        else:
+        else: # Botol dan Larutan
             new_stock = Stock.query.filter_by(id_aroma = old_aroma).first()
      
             if qty > old_qty:
@@ -150,10 +169,13 @@ def penjualan_delete():
     id_penjualan = request.form['id_penjualan']
     delete = Penjualan.query.get(id_penjualan)
 
+    delete_log_pelanggan = Log_pelanggan.query.filter_by(id_penjualan = id_penjualan).first()
+
     stock_item = Stock.query.filter_by(id_aroma = delete.id_aroma).first()
     stock_item.stock += delete.qty
 
     db.session.delete(delete)
+    db.session.delete(delete_log_pelanggan)
     db.session.commit()
     flash("Data berhasil dihapus", 'success')
 
@@ -191,7 +213,6 @@ def aroma_add():
     if request.method == 'POST':
         nama = request.form['nama']
         id_pabrik = request.form['pabrik']
-        harga = request.form['harga']
         harga2 = request.form['harga2']
         harga3 = request.form['harga3']
         harga4 = request.form['harga4']
@@ -199,7 +220,6 @@ def aroma_add():
 
         data = Aroma(nama = nama,
                      id_pabrik = id_pabrik,
-                     harga = harga,
                      harga2 = harga2,
                      harga3 = harga3,
                      harga4 = harga4,
@@ -223,7 +243,6 @@ def aroma_edit():
         if pabrik != None:
             update.id_pabrik = pabrik
 
-        update.harga = request.form['harga']
         update.harga2 = request.form['harga2']
         update.harga3 = request.form['harga3']
         update.harga4 = request.form['harga4']
@@ -636,7 +655,6 @@ def pembelian_add():
         id_barang = request.form.get('barang')
         id_supplier = request.form['toko']
         qty_list = request.form.getlist('qty')
-        # qty = int(request.form['qty'])
         harga = request.form['harga']
         date = request.form['date']
 
@@ -650,10 +668,19 @@ def pembelian_add():
 
         if id_aroma:
             stock_item = Stock.query.filter_by(id_aroma = id_aroma).first()
+
+            update = Aroma.query.get(id_aroma)
+            if selected_qty == 100:
+                update.harga2 = int(harga) // 100
+            elif selected_qty == 250:
+                update.harga3 = int(harga) // 250
+            elif selected_qty == 500:
+                update.harga4 = int(harga) // 500
+            elif selected_qty == 1000:
+                update.harga5 = int(harga) // 1000
+
             if stock_item:
                 stock_item.stock += selected_qty
-                flash('Data berhasil ditambahkan', 'success')
-
             else:
                 stock = Stock(id_pabrik = id_pabrik,
                                 id_aroma = id_aroma,
@@ -678,6 +705,8 @@ def pembelian_add():
 
             db.session.add(data)
             db.session.commit()
+        
+        flash('Data berhasil ditambahkan', 'success')
 
         return redirect(url_for('datab.pembelian'))
 

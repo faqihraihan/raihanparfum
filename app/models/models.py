@@ -15,11 +15,10 @@ class Aroma(db.Model):
     id_aroma = db.Column(db.Integer(), primary_key = True)
     id_pabrik = db.Column(db.Integer(), db.ForeignKey('pabrik.id_pabrik'))
     nama = db.Column(db.String(20))
-    harga = db.Column(db.Integer)
-    harga2 = db.Column(db.Integer())
-    harga3 = db.Column(db.Integer())
-    harga4 = db.Column(db.Integer())
-    harga5 = db.Column(db.Integer())
+    harga2 = db.Column(db.Integer()) # /100ml
+    harga3 = db.Column(db.Integer()) # /250ml
+    harga4 = db.Column(db.Integer()) # /500ml
+    harga5 = db.Column(db.Integer()) # /1000ml
 
     penjualan_rs = db.relationship("Penjualan", backref="aroma")
     pembelian_rs = db.relationship("Pembelian", backref="aroma")
@@ -34,6 +33,7 @@ class Penjualan(db.Model):
     harga = db.Column(db.Integer())
     date = db.Column(db.Date())
     created_at = db.Column(db.DateTime, default=datetime.now)
+    id_pelanggan = db.Column(db.String(50), db.ForeignKey('pelanggan.id_pelanggan'))
 
     log_pelanggan_rs = db.relationship("Log_pelanggan", backref="penjualan")
 
@@ -90,6 +90,7 @@ class Pelanggan(db.Model):
     alamat = db.Column(db.String(50))
     created_at = db.Column(db.DateTime, default=datetime.now)
 
+    penjualan_rs = db.relationship("Penjualan", backref="pelanggan")
     log_pelanggan_rs = db.relationship("Log_pelanggan", backref="pelanggan")
 
 

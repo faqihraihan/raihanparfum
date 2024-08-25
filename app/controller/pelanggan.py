@@ -64,11 +64,20 @@ def pelanggan_edit():
     if request.method == 'POST':
         update = Pelanggan.query.get(request.form.get('id_pelanggan'))
         update.nama = request.form['nama']
-        update.telp = request.form['telp']
+        telp = request.form['telp']
         update.alamat = request.form['alamat']
 
-        db.session.commit()
-        flash("Data berhasil diubah", 'success')
+        check_telp = db.session.query(Pelanggan).filter(Pelanggan.telp == telp).first()
+
+        if check_telp:
+            flash('No. Hp sudah terdaftar', 'primary')
+
+            return redirect(url_for('cust.purchase_history', id_pelanggan = check_telp.id_pelanggan))
+        else:
+            update.telp = telp
+
+            db.session.commit()
+            flash("Data berhasil diubah", 'success')
 
         return redirect(url_for('cust.pelanggan'))
 
@@ -77,8 +86,12 @@ def pelanggan_edit():
 def pelanggan_delete():
     id_pelanggan = request.form['id_pelanggan']
     delete = Pelanggan.query.get(id_pelanggan)
+    
+    delete_log_pelanggan = Log_pelanggan.query.filter_by(id_pelanggan = id_pelanggan).all()
 
     db.session.delete(delete)
+    for data in delete_log_pelanggan:
+        db.session.delete(data)
     db.session.commit()
     flash("Data berhasil dihapus", 'success')
 

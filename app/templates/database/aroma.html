@@ -36,10 +36,10 @@
             <table class="table table-striped projects">
                 <thead>
                     <tr>
-                        <th rowspan="2"  class="text-center vertical" style="width: 35%">
+                        <th rowspan="2"  class="text-center vertical" style="width: 40%">
                           Aroma
                         </th>
-                        <th colspan="5" style="width: 50%" class="text-center">
+                        <th colspan="4" style="width: 45%" class="text-center">
                           Harga per ml
                         </th>
                         <th rowspan="2" style="width: 15%" class="text-right vertical">
@@ -58,9 +58,6 @@
                     </tr>
                     <tr>
                         <th class="text-center">
-                          ml
-                        </th>
-                        <th class="text-center">
                           100 ml
                         </th>
                         <th class="text-center">
@@ -70,7 +67,7 @@
                           500 ml
                         </th>
                         <th class="text-center">
-                          1.000 ml
+                          1000 ml
                         </th>
                     </tr>
                 </thead>
@@ -81,7 +78,6 @@
                             <td>
                                 {{ row.nama }} <small>({{ row.pabrik.nama }})</small>
                             </td>
-                            <td class="text-center">{{ row.harga }}</td>
                             <td class="text-center">{{ row.harga2 }}</td>
                             <td class="text-center">{{ row.harga3 }}</td>
                             <td class="text-center">{{ row.harga4 }}</td>
@@ -102,7 +98,6 @@
                             <td>
                                 {{ row.nama }} <small>({{ row.pabrik.nama }})</small>
                             </td>
-                            <td class="text-center">{{ row.harga }}</td>
                             <td class="text-center">{{ row.harga2 }}</td>
                             <td class="text-center">{{ row.harga3 }}</td>
                             <td class="text-center">{{ row.harga4 }}</td>
@@ -162,14 +157,6 @@
                 <div class="input-group-append">
                   <div class="input-group-text">
                     <span class="nav-icon fas fa-industry"></span>
-                  </div>
-                </div>
-              </div>
-              <div class="form-group input-group">
-                <input type="number" class="form-control" name="harga" placeholder="Harga/ml">
-                <div class="input-group-append">
-                  <div class="input-group-text">
-                    <span class="nav-icon fas fa-donate"></span>
                   </div>
                 </div>
               </div>
@@ -248,14 +235,6 @@
                     </div>
                   </div>
                   <div class="form-group input-group">
-                    <input type="number" class="form-control" name="harga" placeholder="Harga/ml" value="{{ row.harga }}">
-                    <div class="input-group-append">
-                      <div class="input-group-text">
-                        <span class="nav-icon fas fa-donate"></span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="form-group input-group">
                     <input type="number" class="form-control" name="harga2" placeholder="Harga/100ml" value="{{ row.harga2 }}">
                     <div class="input-group-append">
                       <div class="input-group-text">
@@ -322,15 +301,6 @@
                 <div class="input-group-append">
                   <div class="input-group-text">
                     <span class="nav-icon fas fa-industry"></span>
-                  </div>
-                </div>
-              </div>
-              <h6><b>Harga/ml</b></h6>
-              <div class="form-group input-group">
-                <input type="text" class="form-control" value="{{ row.harga }}" disabled>
-                <div class="input-group-append">
-                  <div class="input-group-text">
-                    <span class="nav-icon fas fa-donate"></span>
                   </div>
                 </div>
               </div>
