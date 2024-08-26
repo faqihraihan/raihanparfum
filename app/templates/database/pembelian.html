@@ -1,5 +1,9 @@
 {% extends 'database/base-database.html' %}
 
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/select2/css/select2.min.css') }}">
+{% endblock %}
+
 {% block body %}
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -163,8 +167,8 @@
                     </div>
                   </div>
                 </div>
-                <div class="form-group input-group">
-                  <select name="aroma" class="form-control aroma-response required" required> 
+                <div class="form-group input-group select2-input-group">
+                  <select name="aroma" class="form-control aroma-response select2 required" required> 
                     <option value="" disabled selected hidden>Aroma</option>  
                   </select>
                   <div class="input-group-append">
@@ -256,75 +260,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Modal Edit Penjualan -->
-  {% for row in penjualan %}
-    <div id="editmodal{{ row.id_penjualan }}" class="modal fade" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title">Ubah Data Penjualan</h4>
-            </div>
-            <div class="modal-body card-body register-card-body parent-response-class">
-              <form action="{{ url_for('datab.penjualan_edit') }}" method="POST">
-                  <div class="form-group input-group">
-                    <input type="hidden"  name="id_penjualan" value="{{ row.id_penjualan }}">
-                    <select name="pabrik" class="form-control pabrik-response" required> 
-                      <option value="{{ row.id_pabrik }}" disabled selected hidden>{{ row.pabrik.nama }}</option>  
-                      {% for row in pabrik %} 
-                        <option value="{{ row.id_pabrik }}">{{ row.nama }}</option>
-                      {% endfor %}
-                    </select>
-                    <div class="input-group-append">
-                      <div class="input-group-text">
-                        <span class="nav-icon fas fa-industry"></span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="form-group input-group">
-                    <select name="aroma" class="form-control aroma-response" required> 
-                      <option value="{{ row.id_aroma }}" disabled selected hidden>{{ row.aroma.nama }}</option>  
-                    </select>
-                    <div class="input-group-append">
-                      <div class="input-group-text">
-                        <span class="nav-icon fas fa-spray-can"></span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="form-group input-group">
-                    <input type="number" class="form-control" name="qty" placeholder="Qty" value="{{ row.qty }}">
-                    <div class="input-group-append">
-                      <div class="input-group-text">
-                        <span class="nav-icon fas fa-boxes"></span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="form-group input-group">
-                    <input type="number" class="form-control" name="harga" placeholder="Harga" value="{{ row.harga }}">
-                    <div class="input-group-append">
-                      <div class="input-group-text">
-                        <span class="nav-icon fas fa-money-bill"></span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="form-group input-group">
-                    <input type="date" class="form-control" name="date" value="{{ row.date }}">
-                    <div class="input-group-append">
-                      <div class="input-group-text">
-                        <span class="nav-icon fas fa-calendar"></span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button class="btn btn-primary btn-wrn" type="submit">Ubah</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                  </div>
-              </form>
-            </div>
-        </div>
-      </div>
-    </div>
-  {% endfor %}
 
   <!-- Modal Delete Pembelian -->
   {% for row in pembelian %}
@@ -431,4 +366,17 @@
       </div>
     </div>
   {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+<!-- Select2 -->
+<script src="{{ url_for('static', filename='plugins/select2/js/select2.full.min.js') }}"></script>
+<script>
+    $(function () {
+      $('.aroma-response.select2').select2({
+        placeholder: "Cari aroma...",
+        allowClear: true,
+      });
+    });
+</script>
 {% endblock %}

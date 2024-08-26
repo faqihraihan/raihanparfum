@@ -21,7 +21,6 @@
                     <div class="col-11">
                         <div class="form-group">
                             <select class="select2" name="id_pelanggan" id="id_pelanggan" style="width: 100%;" required>
-                                <option value="" disabled selected hidden>Cari Data...</option> 
                                 {% for row in pelanggan %} 
                                   <option value="{{ row.id_pelanggan }}">{{ row.id_pelanggan }} | {{ row.nama }} {% if row.telp %}| {{ row.telp | format_telp }}{% endif %}</option>
                                 {% endfor %}
@@ -51,7 +50,11 @@
 <script src="{{ url_for('static', filename='plugins/select2/js/select2.full.min.js') }}"></script>
 <script>
     $(function () {
-      $('.select2').select2()
+      $('.select2').select2({
+        placeholder: "Cari...",
+        allowClear: true,
+        width: 'resolve'
+      })
     });
 </script>
 {% endblock %}

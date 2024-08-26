@@ -1,5 +1,8 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
-from app.models.models import Penjualan, Aroma, Pabrik, Stock, Supplier, Barang, Ukur, Pembelian, Pelanggan, Log_pelanggan
+from app.models.models import (
+    Penjualan, Aroma, Pabrik, Stock, Supplier, Barang, Ukur,
+    Pembelian, Pelanggan, Log_pelanggan, Log_aroma
+)
 from app import db
 from datetime import datetime
 import os
@@ -660,6 +663,23 @@ def pembelian_add():
 
         date_object = datetime.strptime(date, '%Y-%m-%d')
 
+        now = datetime.now()
+        year = now.strftime("%y")
+        month = now.strftime("%m")
+
+        last_pembelian = db.session.query(Pembelian).filter(
+            func.strftime('%Y-%m', Pembelian.created_at) == now.strftime('%Y-%m')
+            ).order_by(Pembelian.id_pembelian.desc()).first()
+
+        if last_pembelian:
+            last_id_str = last_pembelian.id_pembelian[-5:]
+            last_id_number = int(last_id_str)
+            new_id_number = last_id_number + 1
+        else:
+            new_id_number = 10001
+
+        id_pembelian = f"B{year}{month}{new_id_number}"
+
         selected_qty = None
         for qty_str in qty_list:
             if qty_str:
@@ -688,16 +708,21 @@ def pembelian_add():
                 
                 db.session.add(stock)
 
-            data = Pembelian(id_aroma = id_aroma,
+            data = Pembelian(id_pembelian = id_pembelian,
+                        id_aroma = id_aroma,
                         qty = selected_qty,
                         harga = harga,
                         date = date_object,
                         id_supplier = id_supplier)
 
+            log = Log_aroma(id_pembelian = id_pembelian, id_aroma = id_aroma)
+
+            db.session.add(log)
             db.session.add(data)
             db.session.commit()
         else:
-            data = Pembelian(id_barang = id_barang,
+            data = Pembelian(id_pembelian = id_pembelian,
+                        id_barang = id_barang,
                         qty = selected_qty,
                         harga = harga,
                         date = date_object,
@@ -717,11 +742,14 @@ def pembelian_delete():
     id_aroma = request.form.get('aroma')
     delete = Pembelian.query.get(id_pembelian)
 
+    delete_log_aroma = Log_aroma.query.filter_by(id_pembelian = id_pembelian).first()
+
     if id_aroma:
         stock_item = Stock.query.filter_by(id_aroma = delete.id_aroma).first()
         stock_item.stock -= delete.qty
 
     db.session.delete(delete)
+    db.session.delete(delete_log_aroma)
     db.session.commit()
     flash("Data berhasil dihapus", 'success')
 

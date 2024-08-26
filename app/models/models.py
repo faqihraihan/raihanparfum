@@ -23,9 +23,11 @@ class Aroma(db.Model):
     penjualan_rs = db.relationship("Penjualan", backref="aroma")
     pembelian_rs = db.relationship("Pembelian", backref="aroma")
     stock_rs = db.relationship("Stock", backref="aroma")
+    log_aroma_rs = db.relationship("Log_aroma", backref="aroma")
 
 
 class Penjualan(db.Model):
+    # S2024081001 (S-202408-10001: Prefix-WaktuInput-Urutan)
     id_penjualan = db.Column(db.String(50), primary_key = True)
     id_pabrik = db.Column(db.Integer(), db.ForeignKey('pabrik.id_pabrik'))
     id_aroma = db.Column(db.Integer(), db.ForeignKey('aroma.id_aroma'))
@@ -73,13 +75,17 @@ class Ukur(db.Model):
 
 
 class Pembelian(db.Model):
-    id_pembelian = db.Column(db.Integer(), primary_key = True)
+    # B2024081001 (B-202408-10001: Prefix-WaktuInput-Urutan)
+    id_pembelian = db.Column(db.String(50), primary_key = True)
     id_aroma = db.Column(db.Integer(), db.ForeignKey('aroma.id_aroma'))
     id_barang = db.Column(db.Integer(), db.ForeignKey('barang.id_barang'))
     id_supplier = db.Column(db.Integer(), db.ForeignKey('supplier.id_supplier'))
     qty = db.Column(db.Integer())
     harga = db.Column(db.Integer())
     date = db.Column(db.Date())
+    created_at = db.Column(db.DateTime, default=datetime.now)
+
+    log_aroma_rs = db.relationship("Log_aroma", backref="pembelian")
 
 
 class Pelanggan(db.Model):
@@ -98,3 +104,9 @@ class Log_pelanggan(db.Model):
     id_log_pelanggan = db.Column(db.Integer(), primary_key=True)
     id_pelanggan = db.Column(db.String(50), db.ForeignKey('pelanggan.id_pelanggan'))
     id_penjualan = db.Column(db.Integer(), db.ForeignKey('penjualan.id_penjualan'))
+
+
+class Log_aroma(db.Model):
+    id_log_aroma = db.Column(db.Integer(), primary_key=True)
+    id_aroma = db.Column(db.String(50), db.ForeignKey('aroma.id_aroma'))
+    id_pembelian = db.Column(db.Integer(), db.ForeignKey('pembelian.id_pembelian'))

@@ -134,3 +134,27 @@ i.purchase_history {
 .select2-results__option--highlighted:hover {
     background-color: #335476 !important;
 }
+
+.select2-input-group {
+    display: flex;
+    align-items: center;
+    align-items: stretch;
+}
+
+.select2-container {
+    flex: 1;
+}
+
+.select2-container .input-group-append {
+    margin-left: -1px;
+}
+
+.select2-input-group, 
+.select2-input-group .input-group-append, 
+.select2-input-group .select2-container--default .select2-selection--single {
+    box-sizing: border-box;
+}
+
+.select2-input-group .select2-container--default .select2-selection--single {
+    border-right: 0;
+}

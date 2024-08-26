@@ -99,8 +99,13 @@ fetch('/api/penjualan-sebulan')
                       },
                       ticks: {
                         fontColor: '#adb5bd',
-                        callback: function(value) {
-                          return formatRupiah(value);
+                        callback: function(value, index) {
+                          // Menampilkan hanya setiap 2 nilai
+                          if (index % 2 === 0) {
+                              return formatRupiah(value);
+                          } else {
+                              return ''; // Tidak menampilkan nilai jika index ganjil
+                          }
                         }
                       }
                     }]

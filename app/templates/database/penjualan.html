@@ -1,5 +1,9 @@
 {% extends 'database/base-database.html' %}
 
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/select2/css/select2.min.css') }}">
+{% endblock %}
+
 {% block body %}
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -65,7 +69,7 @@
                             <small>
                               ( {{ row.pabrik.nama }} )
                             </small><br/>
-                            <i>{{ row.pelanggan.nama }}</i>
+                            <small>{{ row.pelanggan.nama }}</small>
                           </td>
                           <td>{{ row.qty }} ml</td>
                           <td>{{ row.harga | format_rupiah }}</td>
@@ -121,8 +125,8 @@
                   </div>
                 </div>
               </div>
-              <div class="form-group input-group">
-                <select name="aroma" class="form-control aroma-response" required> 
+              <div class="form-group input-group select2-input-group">
+                <select name="aroma" class="form-control aroma-response select2" required> 
                   <option value="" disabled selected hidden>Aroma</option>  
                 </select>
                 <div class="input-group-append">
@@ -202,8 +206,8 @@
                       </div>
                     </div>
                   </div>
-                  <div class="form-group input-group">
-                    <select name="aroma" class="form-control aroma-response" required> 
+                  <div class="form-group input-group select2-input-group">
+                    <select name="aroma" class="form-control aroma-response select2" required> 
                       <option value="{{ row.id_aroma }}" disabled selected hidden>{{ row.aroma.nama }}</option>  
                     </select>
                     <div class="input-group-append">
@@ -335,4 +339,17 @@
       </div>
     </div>
   {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+<!-- Select2 -->
+<script src="{{ url_for('static', filename='plugins/select2/js/select2.full.min.js') }}"></script>
+<script>
+    $(function () {
+      $('.aroma-response.select2').select2({
+        placeholder: "Cari aroma...",
+        allowClear: true,
+      });
+    });
+</script>
 {% endblock %}
