@@ -1,0 +1,301 @@
+{% extends 'dashboard/base-dashboard.html' %}
+
+{% block body %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper kanban">
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-6">
+            <h1>List Pesanan</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content pb-3">
+      <div class="container-fluid h-100">
+        {% for row in supplier %}
+          <div class="card card-row card-primary">
+            <div class="card-header">
+              <h3 class="card-title">
+                {{ row.nama }}
+              </h3>
+              <div class="text-right">
+                <a class="btn btn-tool no-padding" href="" data-toggle="modal" data-target="#addmodal{{ row.id_supplier }}">
+                  <i class="fas fa-plus"></i>
+                </a>
+              </div>
+            </div>
+              <div class="card-body">
+                {% for order in pesanan %}
+                  {% if order.id_supplier == row.id_supplier %}
+                    <div class="card card-light card-outline">
+                      <div class="card-header">
+                        <h5 class="card-title">{{ order.nama }}</h5>
+                        <div class="card-tools">
+                          <a href="#" class="btn btn-tool btn-link no-padding">#{{ order.id_pesanan }}</a>
+                          <a class="btn btn-tool no-padding-right" href="" data-toggle="modal" data-target="#addmodalitem{{ order.id_pesanan }}">
+                            <i class="fas fa-plus"></i>
+                          </a>
+                          <a class="btn btn-tool" href="" data-toggle="modal" data-target="#deletemodal{{ order.id_pesanan }}">
+                            <i class="fas fa-times"></i>
+                          </a>
+                        </div>
+                      </div>
+                      {% set total_namespace = namespace(total=0) %}
+                      <div class="card-body">
+                        {% if order.item %}
+                          {% for item in order.item %}
+                          <div class="custom-control custom-checkbox d-flex">
+                            <input class="custom-control-input" type="checkbox" id="customCheckbox{{ order.id_pesanan }}{{ loop.index }}">
+                            <label for="customCheckbox{{ order.id_pesanan }}{{ loop.index }}" class="custom-control-label normal mb-0">
+                              {% if item.id_aroma in aroma %}
+                                {{ aroma[item.id_aroma].nama }} <small>({{ aroma[item.id_aroma].pabrik }})</small>
+                              {% elif item.id_btl in botol %}
+                                {{ botol[item.id_btl].nama }}
+                              {% elif item.id_larutan in larutan %}
+                                {{ larutan[item.id_larutan].nama }}
+                              {% endif %}
+                            </label>
+                            <div class="ml-auto">
+                              <label class="normal">
+                                {{ item.qty }}
+                                {% if item.id_aroma in aroma %}
+                                  ml
+                                {% elif item.id_btl in botol %}
+                                  {{ botol[item.id_btl].ukur }}
+                                {% elif item.id_larutan in larutan %}
+                                  {{ larutan[item.id_larutan].ukur }}
+                                {% endif %}
+                              </label>
+                              <a class="btn btn-tool" href="" data-toggle="modal" data-target="#deletemodalitem{{ order.id_pesanan }}{{ loop.index }}">
+                                <i class="fas fa-times"></i>
+                              </a>
+                            </div>
+                          </div>
+
+                            {% if item.id_aroma in aroma %}
+                              {% if item.qty == 100 %}
+                                {% set harga_item = aroma[item.id_aroma].harga2 * 100 %}
+                              {% elif item.qty == 250 %}
+                                {% set harga_item = aroma[item.id_aroma].harga3 * 250 %}
+                              {% elif item.qty == 500 %}
+                                {% set harga_item = aroma[item.id_aroma].harga4 * 500 %}
+                              {% elif item.qty == 1000 %}
+                                {% set harga_item = aroma[item.id_aroma].harga5 * 1000 %}
+                              {% endif %}
+                            {% elif item.id_btl in botol %}
+                                {% set harga_item = botol[item.id_btl].harga * item.qty %}
+                            {% elif item.id_larutan in larutan %}
+                                {% set harga_item = larutan[item.id_larutan].harga * item.qty %}
+                            {% endif %}
+                            {% set total_namespace.total = total_namespace.total + harga_item %}
+
+                            <!-- Modal Konfirmasi -->
+                            <div class="modal fade" id="deletemodalitem{{ order.id_pesanan }}{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                              <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Konfirmasi Penghapusan Item</h5>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <a href="{{ url_for('dashb.list_pesanan_delete_item', order_id=order.id_pesanan, item_index=loop.index) }}" class="btn btn-danger">Hapus</a>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          {% endfor %}
+                        {% else %}
+                          <p>Pesanan ini tidak memiliki daftar item.</p>
+                        {% endif %}
+                      </div>
+                      <div class="card-footer">
+                        <div class="d-flex">
+                          <label class="mb-0">
+                            Total:
+                          </label>
+                          <div class="ml-auto">
+                            {{ total_namespace.total | format_rupiah_full }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+</div>
+<!-- ./wrapper -->
+
+<!-- Modal Add Pesanan -->
+{% for row in supplier %}
+<div id="addmodal{{ row.id_supplier }}" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Tambah Pesanan Toko {{ row.nama }}</h4>
+        </div>
+        <div class="modal-body card-body register-card-body">
+          <form action="{{ url_for('dashb.list_pesanan_add') }}" method="POST">
+              <div class="form-group input-group">
+                <input type="hidden"  name="id_supplier" value="{{ row.id_supplier }}">
+                <input type="text" class="form-control" name="nama" placeholder="Nama Pesanan">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-clipboard"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-primary btn-wrn" type="submit">Tambah</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+              </div>
+          </form>
+        </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<!-- Modal Add Item -->
+{% for row in pesanan %}
+<div id="addmodalitem{{ row.id_pesanan }}" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Tambah Item</h4>
+        </div>
+        <div class="modal-body card-body register-card-body parent-response-class">
+          <form action="{{ url_for('dashb.list_pesanan_add_item' )}}" method="POST">
+            <div class="form-group input-group">
+              <input type="hidden"  name="id_pesanan" value="{{ row.id_pesanan }}">
+              <select name="item" class="form-control" id="item-response{{ row.id_pesanan }}" required> 
+                <option value="" disabled selected hidden>Jenis Barang</option>
+                <option value="parfum">Parfum</option>
+                <option value="botol">Botol</option>
+                <option value="larutan">Larutan</option>
+              </select>
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="nav-icon fas fa-cogs"></span>
+                </div>
+              </div>
+            </div>
+            <div id="itemparfum" class="item">
+              <div class="form-group input-group">
+                <select name="pabrik" class="form-control pabrik-response required" required> 
+                  <option value="" disabled selected hidden>Nama Pabrik</option>  
+                  {% for row in pabrik %} 
+                    <option value="{{ row.id_pabrik }}">{{ row.nama }}</option>
+                  {% endfor %}
+                </select>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-industry"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group input-group select2-input-group">
+                <select name="aroma" class="form-control aroma-response select2 required" required> 
+                  <option value="" disabled selected hidden>Aroma</option>  
+                </select>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-spray-can"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group input-group">
+                <select name="qty" class="form-control"> 
+                  <option value="" disabled selected hidden>Qty</option>
+                  <option value="100">100 ml</option>
+                  <option value="250">250 ml</option>
+                  <option value="500">500 ml</option>
+                  <option value="1000">1.000 ml</option>
+                </select>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-boxes"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="itembotol" class="item">
+              <div class="form-group input-group">
+                <input type="hidden"  name="jenis_item" value="botol">
+                <select name="barang" class="form-control barang-response required" required> 
+                  <option value="" disabled selected hidden>Nama Barang</option>  
+                </select>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-flask"></span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-group input-group">
+                <input type="number" class="form-control" name="qty" placeholder="Qty">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-boxes"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="itemlarutan" class="item">
+              <div class="form-group input-group">
+                <input type="hidden"  name="jenis_item" value="larutan">
+                <select name="barang" class="form-control barang-response required" required> 
+                  <option value="" disabled selected hidden>Nama Barang</option>  
+                </select>
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-flask"></span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-group input-group">
+                <input type="number" class="form-control" name="qty" placeholder="Qty">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="nav-icon fas fa-boxes"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-primary btn-success" type="submit">Tambah</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+            </div>
+          </form>
+        </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<!-- Modal Delete Pesanan -->
+{% for order in pesanan %}
+  <div id="deletemodal{{ order.id_pesanan }}" class="modal fade" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Konfirmasi Penghapusan Pesanan</h5>
+        </div>
+        <div class="modal-footer">
+          <a href="{{ url_for('dashb.list_pesanan_delete_pesanan', order_id=order.id_pesanan) }}" class="btn btn-danger">Hapus</a>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+{% endblock %}

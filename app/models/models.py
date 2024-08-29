@@ -2,6 +2,16 @@ from app import db
 from datetime import datetime
 
 
+# ID Code Information:
+# S = Penjualan
+# B = Pembelian
+# O = Order
+# IP = Item Parfum
+# IB = Item Botol
+# IL = Item Larutan
+# MEM = Pelanggan
+
+
 class Pabrik(db.Model):
     id_pabrik = db.Column(db.Integer(), primary_key = True)
     nama = db.Column(db.String(20))
@@ -12,7 +22,8 @@ class Pabrik(db.Model):
 
 
 class Aroma(db.Model):
-    id_aroma = db.Column(db.Integer(), primary_key = True)
+    # IP1 (IP-1: Prefix-ID Unik)
+    id_aroma = db.Column(db.String(50), primary_key = True)
     id_pabrik = db.Column(db.Integer(), db.ForeignKey('pabrik.id_pabrik'))
     nama = db.Column(db.String(20))
     harga2 = db.Column(db.Integer()) # /100ml
@@ -27,10 +38,10 @@ class Aroma(db.Model):
 
 
 class Penjualan(db.Model):
-    # S2024081001 (S-202408-10001: Prefix-WaktuInput-Urutan)
+    # S24081001 (S-2408-10001: Prefix-WaktuInput-Urutan)
     id_penjualan = db.Column(db.String(50), primary_key = True)
     id_pabrik = db.Column(db.Integer(), db.ForeignKey('pabrik.id_pabrik'))
-    id_aroma = db.Column(db.Integer(), db.ForeignKey('aroma.id_aroma'))
+    id_aroma = db.Column(db.String(50), db.ForeignKey('aroma.id_aroma'))
     qty = db.Column(db.Integer())
     harga = db.Column(db.Integer())
     date = db.Column(db.Date())
@@ -43,7 +54,7 @@ class Penjualan(db.Model):
 class Stock(db.Model):
     id_stock = db.Column(db.Integer(), primary_key = True)
     id_pabrik = db.Column(db.Integer(), db.ForeignKey('pabrik.id_pabrik'))
-    id_aroma = db.Column(db.Integer(), db.ForeignKey('aroma.id_aroma'))
+    id_aroma = db.Column(db.String(50), db.ForeignKey('aroma.id_aroma'))
     stock = db.Column(db.Integer())
 
 
@@ -53,10 +64,11 @@ class Supplier(db.Model):
 
     barang_rs = db.relationship("Barang", backref="supplier")
     pembelian_rs = db.relationship("Pembelian", backref="supplier")
+    pesanan_rs = db.relationship("Pesanan", backref="supplier")
 
 
 class Barang(db.Model):
-    id_barang = db.Column(db.Integer(), primary_key = True)
+    id_barang = db.Column(db.String(50), primary_key = True)
     id_supplier = db.Column(db.Integer(), db.ForeignKey('supplier.id_supplier'))
     id_ukur = db.Column(db.Integer(), db.ForeignKey('ukur.id_ukur'))
     nama = db.Column(db.String(20))
@@ -75,10 +87,10 @@ class Ukur(db.Model):
 
 
 class Pembelian(db.Model):
-    # B2024081001 (B-202408-10001: Prefix-WaktuInput-Urutan)
+    # B24081001 (B-2408-10001: Prefix-WaktuInput-Urutan)
     id_pembelian = db.Column(db.String(50), primary_key = True)
-    id_aroma = db.Column(db.Integer(), db.ForeignKey('aroma.id_aroma'))
-    id_barang = db.Column(db.Integer(), db.ForeignKey('barang.id_barang'))
+    id_aroma = db.Column(db.String(50), db.ForeignKey('aroma.id_aroma'))
+    id_barang = db.Column(db.String(50), db.ForeignKey('barang.id_barang'))
     id_supplier = db.Column(db.Integer(), db.ForeignKey('supplier.id_supplier'))
     qty = db.Column(db.Integer())
     harga = db.Column(db.Integer())
@@ -89,7 +101,7 @@ class Pembelian(db.Model):
 
 
 class Pelanggan(db.Model):
-    # MEM2024081001 (MEM-202408-10001: Prefix-WaktuTerdaftar-Urutan)
+    # MEM24081001 (MEM-2408-10001: Prefix-WaktuTerdaftar-Urutan)
     id_pelanggan = db.Column(db.String(50), primary_key=True)
     nama = db.Column(db.String(20))
     telp = db.Column(db.String(20))
@@ -110,3 +122,12 @@ class Log_aroma(db.Model):
     id_log_aroma = db.Column(db.Integer(), primary_key=True)
     id_aroma = db.Column(db.String(50), db.ForeignKey('aroma.id_aroma'))
     id_pembelian = db.Column(db.Integer(), db.ForeignKey('pembelian.id_pembelian'))
+
+class Pesanan(db.Model):
+    # O124081001 (O-1-2408-10001: Prefix-ID Supplier-WaktuTerdaftar-Urutan)
+    id_pesanan = db.Column(db.String(50), primary_key=True)
+    id_supplier = db.Column(db.Integer(), db.ForeignKey('supplier.id_supplier'))
+    nama = db.Column(db.String(20))
+    item = db.Column(db.JSON)
+    status = db.Column(db.Integer())
+    created_at = db.Column(db.DateTime, default=datetime.now)

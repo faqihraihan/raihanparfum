@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, render_template, jsonify, request, redirect, url_for
 from sqlalchemy import func, extract
 from app import db
-from app.models.models import Penjualan
+from app.models.models import Penjualan, Supplier, Pesanan, Pabrik, Aroma, Barang
+from sqlalchemy.orm.attributes import flag_modified
 
 dashb = Blueprint('dashb', __name__)
 
@@ -149,7 +150,7 @@ def dashboard():
             status_year = 'normal'
             icon_year = 'left'
 
-    return render_template('dashboard/dashboard.html',
+    return render_template('dashboard/dashboard.html', dashboard_nav = 'active',
                             total_today = total_today, result_today = result_today, status_today = status_today, icon_today = icon_today,
                             total_this_week = total_this_week, result_week = result_week, status_week = status_week, icon_week = icon_week,
                             total_this_month = total_this_month, result_month = result_month, status_month = status_month, icon_month = icon_month,
@@ -193,3 +194,171 @@ def penjualan_sebulan():
             for day in all_days]
 
     return jsonify(data)
+
+
+@dashb.route('/dashboard/list-pesanan', methods=['GET', 'POST'])
+def list_pesanan():
+    supplier = db.session.query(Supplier).all()
+    pabrik = db.session.query(Pabrik).all()
+    pesanan = db.session.query(Pesanan).filter_by(status = 0).all()
+
+    id_aroma_set = {item['id_aroma'] 
+                for order in pesanan 
+                if order.item 
+                for item in order.item
+                if 'id_aroma' in item}
+
+    id_larutan_set = {item['id_larutan'] 
+                    for order in pesanan 
+                    if order.item 
+                    for item in order.item 
+                    if 'id_larutan' in item}
+
+    id_btl_set = {item['id_btl'] 
+                for order in pesanan 
+                if order.item 
+                for item in order.item 
+                if 'id_btl' in item}
+
+    aroma = {
+    aroma.id_aroma: {'nama': aroma.nama,
+                     'pabrik': aroma.pabrik.nama,
+                     'harga2': aroma.harga2 or 0,
+                     'harga3': aroma.harga3 or 0,
+                     'harga4': aroma.harga4 or 0,
+                     'harga5': aroma.harga5 or 0}
+                      for aroma in db.session.query(Aroma).filter(Aroma.id_aroma.in_(id_aroma_set)).all()
+                     }
+
+    larutan = {
+        larutan.id_barang: {'nama': larutan.nama,
+                            'ukur': larutan.ukur.nama,
+                            'harga': larutan.harga}
+                            for larutan in db.session.query(Barang).filter(Barang.id_barang.in_(id_larutan_set)).all()
+                            }
+
+    botol = {
+        btl.id_barang: {'nama': btl.nama,
+                        'ukur': btl.ukur.nama,
+                        'harga': btl.harga}
+                        for btl in db.session.query(Barang).filter(Barang.id_barang.in_(id_btl_set)).all()
+                        }
+
+    return render_template('dashboard/list-pesanan.html', list_pesanan_nav = 'active', supplier = supplier, pesanan = pesanan, pabrik = pabrik, aroma = aroma, larutan = larutan, botol = botol)
+
+
+@dashb.route('/dashboard/list-pesanan/add', methods=['POST'])
+def list_pesanan_add():
+    if request.method == 'POST':
+        id_supplier = request.form['id_supplier']
+        nama = request.form['nama']
+        status = 0
+
+        now = datetime.now()
+        year = now.strftime("%y")
+        month = now.strftime("%m")
+
+        last_pesanan = db.session.query(Pesanan).filter(
+            func.strftime('%Y-%m', Pesanan.created_at) == now.strftime('%Y-%m')
+            ).order_by(Pesanan.id_pesanan.desc()).first()
+
+        if last_pesanan:
+            last_id_str = last_pesanan.id_pesanan[-5:]
+            last_id_number = int(last_id_str)
+            new_id_number = last_id_number + 1
+        else:
+            new_id_number = 10001
+
+        id_pesanan = f"O{id_supplier}{year}{month}{new_id_number}"
+
+        data = Pesanan(id_pesanan = id_pesanan,
+                       id_supplier = id_supplier,
+                       nama = nama,
+                       status = status)
+                    
+        db.session.add(data)
+        db.session.commit()
+
+        return redirect(url_for('dashb.list_pesanan'))
+
+
+@dashb.route("/dashboard/list-pesanan/add-item", methods=['GET', 'POST'])
+def list_pesanan_add_item():
+    if request.method == 'POST':
+        id_aroma = request.form.get('aroma')
+        id_barang = request.form.get('barang')
+        jenis_item = request.form.get('jenis_item')
+        qty_list = request.form.getlist('qty')
+        update = Pesanan.query.get(request.form.get('id_pesanan'))
+
+        selected_qty = None
+        for qty_str in qty_list:
+            if qty_str:
+                selected_qty = int(qty_str)
+                break
+
+        if id_aroma:
+            item_json = update.item
+
+            if not item_json:
+                item_json = []
+
+            data_baru = {
+                "id_aroma": id_aroma,
+                "qty": int(selected_qty)
+            }
+
+            item_json.append(data_baru)
+
+            update.item = item_json
+            print(update.item)
+
+            flag_modified(update, 'item')
+            db.session.commit()
+        else:
+            item_json = update.item
+
+            if not item_json:
+                item_json = []
+
+            if jenis_item == "botol":
+                data_baru = {
+                    "id_btl": id_barang,
+                    "qty": int(selected_qty)
+                }
+            else:
+                data_baru = {
+                    "id_larutan": id_barang,
+                    "qty": int(selected_qty)
+                }
+
+            item_json.append(data_baru)
+
+            update.item = item_json
+            print(update.item)
+
+            flag_modified(update, 'item')
+            db.session.commit()
+
+        return redirect(url_for('dashb.list_pesanan'))
+    
+
+@dashb.route('/dashboard/list-pesanan/delete_item/<order_id>/<int:item_index>', methods=['GET'])
+def list_pesanan_delete_item(order_id, item_index):
+    order = db.session.query(Pesanan).get(order_id)
+    
+    order.item.pop(item_index-1)
+    flag_modified(order, 'item')
+    db.session.commit()
+    
+    return redirect(url_for('dashb.list_pesanan', order_id=order_id))
+
+
+@dashb.route("/database/list-pesanan/delete/<order_id>", methods=['GET', 'POST'])
+def list_pesanan_delete_pesanan(order_id):
+    delete = Pesanan.query.get(order_id)
+
+    db.session.delete(delete)
+    db.session.commit()
+
+    return redirect(url_for('dashb.list_pesanan'))

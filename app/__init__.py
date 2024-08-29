@@ -43,6 +43,6 @@ def format_rupiah(value):
 app.jinja_env.filters['format_rupiah'] = format_rupiah
 
 def format_rupiah_full(value):
-    return "Rp. {:0,.2f}".format(value).replace(',', 'x').replace('.', ',').replace('x', '.')
+    return "Rp. " + "{:0,.2f}".format(value).replace(',', 'x').replace('.', ',').replace('x', '.')
 
 app.jinja_env.filters['format_rupiah_full'] = format_rupiah_full

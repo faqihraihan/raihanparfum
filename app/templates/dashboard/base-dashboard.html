@@ -18,6 +18,7 @@
 
   <!-- Raihan Parfum style -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 
   {% block head %}{% endblock %}
 </head>
@@ -59,18 +60,27 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <li class="nav-header">DASHBOARD</li>
           <li class="nav-item">
-            <a href="#" class="nav-link active disabled">
+            {% if dashboard_nav %}
+            <a class="nav-link active" disabled>
+            {% else %}
+            <a href="{{ url_for('dashb.dashboard') }}" class="nav-link">
+            {% endif %}
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 Dashboard
               </p>
             </a>
           </li>
+          <li class="nav-header">PESANAN</li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-ellipsis-h"></i>
+            {% if list_pesanan_nav %}
+            <a class="nav-link active" disabled>
+            {% else %}
+            <a href="{{ url_for('dashb.list_pesanan') }}" class="nav-link">
+            {% endif %}
+              <i class="nav-icon fas fa-clipboard"></i>
               <p>
-                Coming Soon
+                List Pesanan
               </p>
             </a>
           </li>

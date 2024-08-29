@@ -6,7 +6,7 @@ from app.models.models import (
 from app import db
 from datetime import datetime
 import os
-from sqlalchemy import func
+from sqlalchemy import func, cast, Integer
 
 datab = Blueprint('datab', __name__)
 
@@ -21,6 +21,80 @@ datab.config = {
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in datab.config['ALLOWED_EXTENSIONS']
+
+
+@datab.route('/database/update_db')
+def update_db():
+    data = db.session.query(Aroma).all()
+
+    val = 10000
+
+    for row in data:
+        if not row.id_aroma.startswith('IP') and row.id_aroma:
+            row.id_aroma = f'IP{row.id_aroma}'
+
+        if row.harga2 and row.harga2 > val:
+            row.harga2 = row.harga2/100
+        if row.harga3 and row.harga3 > val:
+            row.harga3 = row.harga3/250
+        if row.harga4 and row.harga4 > val:
+            row.harga4 = row.harga4/500
+        if row.harga5 and row.harga5 > val:
+            row.harga5 = row.harga5/1000
+    
+    data2 = db.session.query(Penjualan).all()
+
+    for row2 in data2:
+        if not row2.id_aroma.startswith('IP') and row2.id_aroma:
+            row2.id_aroma = f'IP{row2.id_aroma}'
+
+    data3 = db.session.query(Pembelian).all()
+
+    for row3 in data3:
+        if row3.id_aroma:
+            if not row3.id_aroma.startswith('IP'):
+                row3.id_aroma = f'IP{row3.id_aroma}'
+
+    data4 = db.session.query(Stock).all()
+
+    for row4 in data4:
+        if row4.id_aroma:
+            if not row4.id_aroma.startswith('IP'):
+                row4.id_aroma = f'IP{row4.id_aroma}'
+
+    data5 = db.session.query(Log_aroma).all()
+
+    for row5 in data5:
+        if row5.id_aroma:
+            if not row5.id_aroma.startswith('IP'):
+                row5.id_aroma = f'IP{row5.id_aroma}'
+
+    data6 = db.session.query(Pembelian).all()
+
+    for row6 in data6:
+        if row6.id_barang:
+            if row6.barang:
+                if row6.barang.jenis == "larutan":
+                    if not row6.id_barang.startswith('IL'):
+                        row6.id_barang = f'IL{row6.id_barang}'
+                else:
+                    if not row6.id_barang.startswith('IB'):
+                        row6.id_barang = f'IB{row6.id_barang}'
+
+    data7 = db.session.query(Barang).all()
+
+    for row7 in data7:
+        if row7.id_barang:
+            if row7.jenis == "larutan":
+                if not row7.id_barang.startswith('IL'):
+                    row7.id_barang = f'IL{row7.id_barang}'
+            else:
+                if not row7.id_barang.startswith('IB'):
+                    row7.id_barang = f'IB{row7.id_barang}'
+
+    db.session.commit()
+    flash('Data berhasil diupdate', 'success')
+    return redirect(url_for('datab.penjualan'))
 
 
 @datab.route('/database/penjualan', methods=['GET', 'POST'])
@@ -187,7 +261,7 @@ def penjualan_delete():
 
 @datab.route('/database/aroma', methods=['GET', 'POST'])
 def aroma():
-    aroma = db.session.query(Aroma).order_by(Aroma.id_aroma.desc()).limit(20).all()
+    aroma = db.session.query(Aroma).order_by(cast(func.substr(Aroma.id_aroma, 3), Integer).desc()).limit(20).all()
     pabrik = db.session.query(Pabrik).all()
 
     results = []
@@ -221,7 +295,22 @@ def aroma_add():
         harga4 = request.form['harga4']
         harga5 = request.form['harga5']
 
-        data = Aroma(nama = nama,
+        last_aroma = db.session.query(Aroma).order_by(cast(func.substr(Aroma.id_aroma, 3), Integer).desc()).first()
+        print(last_aroma)
+        
+        if last_aroma:
+            # Ekstrak angka dari id_aroma terakhir dan tambahkan 1
+            last_id_num = int(last_aroma.id_aroma[2:])  # Menghilangkan prefix "IP" dan ambil angka
+            new_id_num = last_id_num + 1
+        else:
+            # Jika belum ada data, mulai dari 1
+            new_id_num = 1
+        
+        # Buat id_aroma baru dengan format yang sama
+        new_id_aroma = f"IP{new_id_num}"
+
+        data = Aroma(id_aroma=new_id_aroma,
+                     nama=nama,
                      id_pabrik = id_pabrik,
                      harga2 = harga2,
                      harga3 = harga3,
