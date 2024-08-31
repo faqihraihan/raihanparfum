@@ -61,6 +61,8 @@ class Stock(db.Model):
 class Supplier(db.Model):
     id_supplier = db.Column(db.Integer(), primary_key = True)
     nama = db.Column(db.String(20))
+    telp = db.Column(db.String(20))
+    alamat = db.Column(db.String(50))
 
     barang_rs = db.relationship("Barang", backref="supplier")
     pembelian_rs = db.relationship("Pembelian", backref="supplier")

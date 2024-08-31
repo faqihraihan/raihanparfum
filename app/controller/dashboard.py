@@ -7,6 +7,28 @@ from sqlalchemy.orm.attributes import flag_modified
 
 dashb = Blueprint('dashb', __name__)
 
+
+@dashb.route('/dashboard/update_db')
+def update_db():
+    data = db.session.query(Pesanan).all()
+
+    for row in data:
+        updated_items = []
+        if row.item:
+            for item in row.item:
+                if 'id_btl' in item and item['id_btl'].startswith('IL'):
+                    item['id_larutan'] = item.pop('id_btl')
+                updated_items.append(item)
+        
+        row.item = updated_items
+        db.session.add(row)
+        flag_modified(row, 'item')
+
+    db.session.commit()
+
+    return redirect(url_for('dashb.dashboard'))
+
+
 @dashb.route('/', methods=['GET', 'POST'])
 def dashboard():
 
@@ -287,7 +309,6 @@ def list_pesanan_add_item():
     if request.method == 'POST':
         id_aroma = request.form.get('aroma')
         id_barang = request.form.get('barang')
-        jenis_item = request.form.get('jenis_item')
         qty_list = request.form.getlist('qty')
         update = Pesanan.query.get(request.form.get('id_pesanan'))
 
@@ -311,7 +332,6 @@ def list_pesanan_add_item():
             item_json.append(data_baru)
 
             update.item = item_json
-            print(update.item)
 
             flag_modified(update, 'item')
             db.session.commit()
@@ -321,7 +341,7 @@ def list_pesanan_add_item():
             if not item_json:
                 item_json = []
 
-            if jenis_item == "botol":
+            if id_barang.startswith('IB'):
                 data_baru = {
                     "id_btl": id_barang,
                     "qty": int(selected_qty)
@@ -335,7 +355,6 @@ def list_pesanan_add_item():
             item_json.append(data_baru)
 
             update.item = item_json
-            print(update.item)
 
             flag_modified(update, 'item')
             db.session.commit()
@@ -354,7 +373,7 @@ def list_pesanan_delete_item(order_id, item_index):
     return redirect(url_for('dashb.list_pesanan', order_id=order_id))
 
 
-@dashb.route("/database/list-pesanan/delete/<order_id>", methods=['GET', 'POST'])
+@dashb.route("/dashboard/list-pesanan/delete/<order_id>", methods=['GET', 'POST'])
 def list_pesanan_delete_pesanan(order_id):
     delete = Pesanan.query.get(order_id)
 
@@ -362,3 +381,55 @@ def list_pesanan_delete_pesanan(order_id):
     db.session.commit()
 
     return redirect(url_for('dashb.list_pesanan'))
+
+
+@dashb.route("/dashboard/list-pesanan/<order_id>/print", methods=['GET', 'POST'])
+@dashb.route("/dashboard/list-pesanan/<order_id>", methods=['GET', 'POST'])
+def detail_pesanan(order_id):
+    pesanan = db.session.query(Pesanan).filter_by(id_pesanan=order_id).first()
+
+    now = datetime.now()
+    year = now.strftime("%Y")
+    month = now.strftime("%m")
+    date = now.strftime("%d")
+    time = (f"{date}-{month}-{year}")
+
+    id_aroma_set = {item['id_aroma']
+                for item in pesanan.item
+                if 'id_aroma' in item}
+
+    id_larutan_set = {item['id_larutan'] 
+                    for item in pesanan.item 
+                    if 'id_larutan' in item}
+
+    id_btl_set = {item['id_btl']
+                for item in pesanan.item 
+                if 'id_btl' in item}
+
+    aroma = {
+            aroma.id_aroma: {'nama': aroma.nama,
+                            'pabrik': aroma.pabrik.nama,
+                            'harga2': aroma.harga2 or 0,
+                            'harga3': aroma.harga3 or 0,
+                            'harga4': aroma.harga4 or 0,
+                            'harga5': aroma.harga5 or 0}
+                            for aroma in db.session.query(Aroma).filter(Aroma.id_aroma.in_(id_aroma_set)).all()
+                            }
+
+    larutan = {
+            larutan.id_barang: {'nama': larutan.nama,
+                                'ukur': larutan.ukur.nama,
+                                'harga': larutan.harga}
+                                for larutan in db.session.query(Barang).filter(Barang.id_barang.in_(id_larutan_set)).all()
+                                }
+
+    botol = {
+            btl.id_barang: {'nama': btl.nama,
+                            'ukur': btl.ukur.nama,
+                            'harga': btl.harga}
+                            for btl in db.session.query(Barang).filter(Barang.id_barang.in_(id_btl_set)).all()}
+
+    if request.path.endswith('/print'):
+        return render_template('dashboard/detail-pesanan-print.html', list_pesanan_nav = 'active', order_id = order_id, pesanan = pesanan, time = time, aroma = aroma, larutan = larutan, botol = botol)
+    else:
+        return render_template('dashboard/detail-pesanan.html', list_pesanan_nav = 'active', order_id = order_id, pesanan = pesanan, time = time, aroma = aroma, larutan = larutan, botol = botol)

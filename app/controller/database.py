@@ -23,83 +23,8 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in datab.config['ALLOWED_EXTENSIONS']
 
 
-@datab.route('/database/update_db')
-def update_db():
-    data = db.session.query(Aroma).all()
-
-    val = 10000
-
-    for row in data:
-        if not row.id_aroma.startswith('IP') and row.id_aroma:
-            row.id_aroma = f'IP{row.id_aroma}'
-
-        if row.harga2 and row.harga2 > val:
-            row.harga2 = row.harga2/100
-        if row.harga3 and row.harga3 > val:
-            row.harga3 = row.harga3/250
-        if row.harga4 and row.harga4 > val:
-            row.harga4 = row.harga4/500
-        if row.harga5 and row.harga5 > val:
-            row.harga5 = row.harga5/1000
-    
-    data2 = db.session.query(Penjualan).all()
-
-    for row2 in data2:
-        if not row2.id_aroma.startswith('IP') and row2.id_aroma:
-            row2.id_aroma = f'IP{row2.id_aroma}'
-
-    data3 = db.session.query(Pembelian).all()
-
-    for row3 in data3:
-        if row3.id_aroma:
-            if not row3.id_aroma.startswith('IP'):
-                row3.id_aroma = f'IP{row3.id_aroma}'
-
-    data4 = db.session.query(Stock).all()
-
-    for row4 in data4:
-        if row4.id_aroma:
-            if not row4.id_aroma.startswith('IP'):
-                row4.id_aroma = f'IP{row4.id_aroma}'
-
-    data5 = db.session.query(Log_aroma).all()
-
-    for row5 in data5:
-        if row5.id_aroma:
-            if not row5.id_aroma.startswith('IP'):
-                row5.id_aroma = f'IP{row5.id_aroma}'
-
-    data6 = db.session.query(Pembelian).all()
-
-    for row6 in data6:
-        if row6.id_barang:
-            if row6.barang:
-                if row6.barang.jenis == "larutan":
-                    if not row6.id_barang.startswith('IL'):
-                        row6.id_barang = f'IL{row6.id_barang}'
-                else:
-                    if not row6.id_barang.startswith('IB'):
-                        row6.id_barang = f'IB{row6.id_barang}'
-
-    data7 = db.session.query(Barang).all()
-
-    for row7 in data7:
-        if row7.id_barang:
-            if row7.jenis == "larutan":
-                if not row7.id_barang.startswith('IL'):
-                    row7.id_barang = f'IL{row7.id_barang}'
-            else:
-                if not row7.id_barang.startswith('IB'):
-                    row7.id_barang = f'IB{row7.id_barang}'
-
-    db.session.commit()
-    flash('Data berhasil diupdate', 'success')
-    return redirect(url_for('datab.penjualan'))
-
-
 @datab.route('/database/penjualan', methods=['GET', 'POST'])
 def penjualan():
-
     penjualan = db.session.query(Penjualan).order_by(Penjualan.id_penjualan.desc()).limit(20).all()
     pabrik = db.session.query(Pabrik).all()
     pelanggan = db.session.query(Pelanggan).all()
@@ -296,7 +221,6 @@ def aroma_add():
         harga5 = request.form['harga5']
 
         last_aroma = db.session.query(Aroma).order_by(cast(func.substr(Aroma.id_aroma, 3), Integer).desc()).first()
-        print(last_aroma)
         
         if last_aroma:
             # Ekstrak angka dari id_aroma terakhir dan tambahkan 1
@@ -486,41 +410,47 @@ def pabrik_delete():
     return redirect(url_for('datab.pabrik'))
 
 
-@datab.route('/database/supplier', methods=['GET', 'POST'])
-def supplier():
+@datab.route('/database/toko', methods=['GET', 'POST'])
+def toko():
     supplier = db.session.query(Supplier).order_by(Supplier.id_supplier.desc()).limit(20).all() 
 
-    return render_template('database/supplier.html', supplier_nav = 'active', supplier = supplier)
+    return render_template('database/toko.html', toko_nav = 'active', supplier = supplier)
 
 
-@datab.route('/database/supplier/add', methods=['POST'])
-def supplier_add():
+@datab.route('/database/toko/add', methods=['POST'])
+def toko_add():
     if request.method == 'POST':
         nama = request.form['nama']
+        telp = request.form['telp']
+        alamat = request.form['alamat']
 
-        data = Supplier(nama = nama)
+        data = Supplier(nama = nama,
+                        telp = telp,
+                        alamat = alamat)
 
         db.session.add(data)
         db.session.commit()
         flash('Data berhasil ditambahkan', 'success')
 
-        return redirect(url_for('datab.supplier'))
+        return redirect(url_for('datab.toko'))
 
 
-@datab.route("/database/supplier/edit", methods=['GET', 'POST'])
-def supplier_edit():
+@datab.route("/database/toko/edit", methods=['GET', 'POST'])
+def toko_edit():
     if request.method == 'POST':
         update = Supplier.query.get(request.form.get('id_supplier'))
         update.nama = request.form['nama']
+        update.telp = request.form['telp']
+        update.alamat = request.form['alamat']
 
         db.session.commit()
         flash("Data berhasil diubah", 'success')
 
-        return redirect(url_for('datab.supplier'))
+        return redirect(url_for('datab.toko'))
 
 
-@datab.route("/database/supplier/delete", methods=['GET', 'POST'])
-def supplier_delete():
+@datab.route("/database/toko/delete", methods=['GET', 'POST'])
+def toko_delete():
     id_supplier = request.form['id_supplier']
     delete = Supplier.query.get(id_supplier)
 
@@ -528,12 +458,13 @@ def supplier_delete():
     db.session.commit()
     flash("Data berhasil dihapus", 'success')
 
-    return redirect(url_for('datab.supplier'))
+    return redirect(url_for('datab.toko'))
 
 
 @datab.route('/database/barang', methods=['GET', 'POST'])
 def barang():
-    barang = db.session.query(Barang).order_by(Barang.id_barang.desc()).all()
+    # barang = db.session.query(Barang).order_by(Barang.id_barang.desc()).all()
+    barang = db.session.query(Barang).order_by(cast(func.substr(Barang.id_barang, 3), Integer).desc()).limit(20).all()
     supplier = db.session.query(Supplier).all()
     ukur = db.session.query(Ukur).all()
 
@@ -548,12 +479,29 @@ def barang_add():
         toko = request.form['toko']
         harga = request.form['harga']
         ukur = request.form['ukur']
+        
+        last_barang = db.session.query(Barang).order_by(cast(func.substr(Barang.id_barang, 3), Integer).desc()).first()
+        
+        if last_barang:
+            # Ekstrak angka dari id_barang terakhir dan tambahkan 1
+            last_id_num = int(last_barang.id_barang[2:])  # Menghilangkan prefix  dan ambil angka
+            new_id_num = last_id_num + 1
+        else:
+            # Jika belum ada data, mulai dari 1
+            new_id_num = 1
+        
+        # Buat id_barang baru dengan format yang sama
+        if jenis == 'larutan':
+            new_id_barang = f"IL{new_id_num}"
+        else:
+            new_id_barang = f"IB{new_id_num}"
 
-        data = Barang(jenis = jenis,
-                    nama = nama,
-                    id_supplier = toko,
-                    harga = harga,
-                    id_ukur = ukur)
+        data = Barang(id_barang = new_id_barang,
+                      jenis = jenis,
+                      nama = nama,
+                      id_supplier = toko,
+                      harga = harga,
+                      id_ukur = ukur)
 
         db.session.add(data)
         db.session.commit()

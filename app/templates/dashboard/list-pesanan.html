@@ -1,5 +1,9 @@
 {% extends 'dashboard/base-dashboard.html' %}
 
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/select2/css/select2.min.css') }}">
+{% endblock %}
+
 {% block body %}
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper kanban">
@@ -31,10 +35,12 @@
                 {% for order in pesanan %}
                   {% if order.id_supplier == row.id_supplier %}
                     <div class="card card-light card-outline">
-                      <div class="card-header">
-                        <h5 class="card-title">{{ order.nama }}</h5>
+                      <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title ellipsis">
+                          {{ order.nama }}<br>
+                          <a href="{{ url_for('dashb.detail_pesanan', order_id = order.id_pesanan) }}" class="btn btn-tool btn-link no-padding no-border">#{{ order.id_pesanan }}</a>
+                        </h5>
                         <div class="card-tools">
-                          <a href="#" class="btn btn-tool btn-link no-padding">#{{ order.id_pesanan }}</a>
                           <a class="btn btn-tool no-padding-right" href="" data-toggle="modal" data-target="#addmodalitem{{ order.id_pesanan }}">
                             <i class="fas fa-plus"></i>
                           </a>
@@ -51,11 +57,17 @@
                             <input class="custom-control-input" type="checkbox" id="customCheckbox{{ order.id_pesanan }}{{ loop.index }}">
                             <label for="customCheckbox{{ order.id_pesanan }}{{ loop.index }}" class="custom-control-label normal mb-0">
                               {% if item.id_aroma in aroma %}
-                                {{ aroma[item.id_aroma].nama }} <small>({{ aroma[item.id_aroma].pabrik }})</small>
+                                <span class="d-inline-block text-truncate label-pesanan">
+                                  {{ aroma[item.id_aroma].nama }} <small>({{ aroma[item.id_aroma].pabrik }})</small>
+                                </span>
                               {% elif item.id_btl in botol %}
-                                {{ botol[item.id_btl].nama }}
+                                <span class="d-inline-block text-truncate label-pesanan">
+                                  {{ botol[item.id_btl].nama }}
+                                </span>
                               {% elif item.id_larutan in larutan %}
-                                {{ larutan[item.id_larutan].nama }}
+                                <span class="d-inline-block text-truncate label-pesanan">
+                                  {{ larutan[item.id_larutan].nama }}
+                                </span>
                               {% endif %}
                             </label>
                             <div class="ml-auto">
@@ -90,7 +102,9 @@
                             {% elif item.id_larutan in larutan %}
                                 {% set harga_item = larutan[item.id_larutan].harga * item.qty %}
                             {% endif %}
-                            {% set total_namespace.total = total_namespace.total + harga_item %}
+                            {% if harga_item %}
+                              {% set total_namespace.total = total_namespace.total + harga_item %}
+                            {% endif %}
 
                             <!-- Modal Konfirmasi -->
                             <div class="modal fade" id="deletemodalitem{{ order.id_pesanan }}{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -202,7 +216,7 @@
                 </div>
               </div>
               <div class="form-group input-group select2-input-group">
-                <select name="aroma" class="form-control aroma-response select2 required" required> 
+                <select name="aroma" class="form-control aroma-response select2-prfm required" required> 
                   <option value="" disabled selected hidden>Aroma</option>  
                 </select>
                 <div class="input-group-append">
@@ -228,9 +242,8 @@
               </div>
             </div>
             <div id="itembotol" class="item">
-              <div class="form-group input-group">
-                <input type="hidden"  name="jenis_item" value="botol">
-                <select name="barang" class="form-control barang-response required" required> 
+              <div class="form-group input-group select2-input-group">
+                <select name="barang" class="form-control barang-response select2-brng required" required> 
                   <option value="" disabled selected hidden>Nama Barang</option>  
                 </select>
                 <div class="input-group-append">
@@ -250,9 +263,8 @@
               </div>
             </div>
             <div id="itemlarutan" class="item">
-              <div class="form-group input-group">
-                <input type="hidden"  name="jenis_item" value="larutan">
-                <select name="barang" class="form-control barang-response required" required> 
+              <div class="form-group input-group select2-input-group">
+                <select name="barang" class="form-control barang-response select2-brng required" required> 
                   <option value="" disabled selected hidden>Nama Barang</option>  
                 </select>
                 <div class="input-group-append">
@@ -298,4 +310,24 @@
     </div>
   </div>
 {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+<!-- Select2 -->
+<script src="{{ url_for('static', filename='plugins/select2/js/select2.full.min.js') }}"></script>
+<script>
+    $(function () {
+      $('.aroma-response.select2-prfm').select2({
+        placeholder: "Cari aroma...",
+        allowClear: true,
+      });
+    });
+
+    $(function () {
+      $('.barang-response.select2-brng').select2({
+        placeholder: "Cari barang...",
+        allowClear: true,
+      });
+    });
+</script>
 {% endblock %}

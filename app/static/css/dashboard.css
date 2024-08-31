@@ -10,3 +10,37 @@ label.normal {
 .no-padding-right {
     padding-right: 0;
 }
+
+.ellipsis {
+    width: 230px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.label-pesanan {
+    width: 160px;
+}
+
+.brand-image-order {
+    opacity: .8;
+    height: 24px;
+    width: auto;
+    margin-right: 10px;
+}
+
+.order-info {
+    display: flex;
+    align-items: center;
+}
+
+.order-date-info {
+    margin-left: auto;
+}
+
+.alamat {
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: normal;
+    margin-bottom: 0;
+}

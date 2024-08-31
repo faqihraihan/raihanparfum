@@ -168,7 +168,7 @@
                   </div>
                 </div>
                 <div class="form-group input-group select2-input-group">
-                  <select name="aroma" class="form-control aroma-response select2 required" required> 
+                  <select name="aroma" class="form-control aroma-response select2-prfm required" required> 
                     <option value="" disabled selected hidden>Aroma</option>  
                   </select>
                   <div class="input-group-append">
@@ -194,8 +194,8 @@
                 </div>
               </div>
               <div id="itembotol" class="item">
-                <div class="form-group input-group">
-                  <select name="barang" class="form-control barang-response required" required> 
+                <div class="form-group input-group select2-input-group">
+                  <select name="barang" class="form-control barang-response select2-brng required" required> 
                     <option value="" disabled selected hidden>Nama Barang</option>  
                   </select>
                   <div class="input-group-append">
@@ -215,8 +215,8 @@
                 </div>
               </div>
               <div id="itemlarutan" class="item">
-                <div class="form-group input-group">
-                  <select name="barang" class="form-control barang-response required" required> 
+                <div class="form-group input-group select2-input-group">
+                  <select name="barang" class="form-control barang-response select2-brng required" required> 
                     <option value="" disabled selected hidden>Nama Barang</option>  
                   </select>
                   <div class="input-group-append">
@@ -373,8 +373,15 @@
 <script src="{{ url_for('static', filename='plugins/select2/js/select2.full.min.js') }}"></script>
 <script>
     $(function () {
-      $('.aroma-response.select2').select2({
+      $('.aroma-response.select2-prfm').select2({
         placeholder: "Cari aroma...",
+        allowClear: true,
+      });
+    });
+
+    $(function () {
+      $('.barang-response.select2-brng').select2({
+        placeholder: "Cari barang...",
         allowClear: true,
       });
     });

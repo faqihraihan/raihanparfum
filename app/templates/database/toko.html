@@ -1,4 +1,4 @@
-{% extends 'pelanggan/base-pelanggan.html' %}
+{% extends 'database/base-database.html' %}
 
 {% block body %}
   <!-- Content Wrapper. Contains page content -->
@@ -36,19 +36,16 @@
             <table class="table table-striped projects">
                 <thead>
                     <tr>
-                        <th style="width: 15%">
-                          ID
+                        <th style="width: 30%">
+                            Toko
                         </th>
-                        <th style="width: 25%">
-                          Nama
+                        <th style="width: 20%">
+                            Whatsapp
                         </th>
-                        <th style="width: 16%">
-                          Whatsapp
+                        <th style="width: 30%">
+                            Alamat
                         </th>
-                        <th style="width: 26%">
-                          Alamat
-                        </th>
-                        <th style="width: 18%" class="text-right">
+                        <th style="width: 20%" class="text-right">
                           <a class="btn btn-success btn-sm" href="" data-toggle="modal" data-target="#addmodal">
                               <i class="fas fa-plus"></i>
                               Tambah
@@ -57,10 +54,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                  {% for row in pelanggan %}
+                  {% for row in supplier %}
                       <tr>
-                          <td>{{ row.id_pelanggan }}</td>
-                          <td><a class="customer-link" href="{{ url_for('cust.purchase_history', id_pelanggan=row.id_pelanggan) }}">{{ row.nama }}</a></td>
+                          <td>{{ row.nama }}</td>
                           {% if row.telp %}
                             <td>{{ row.telp | format_telp }}</td>
                           {% else %}
@@ -68,11 +64,11 @@
                           {% endif %}
                           <td>{{ row.alamat }}</td>
                           <td class="text-right">
-                              <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editmodal{{ row.id_pelanggan }}">
+                              <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editmodal{{ row.id_supplier }}">
                                   <i class="fas fa-pencil-alt"></i>
                                   Ubah
                               </a>
-                              <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deletemodal{{row.id_pelanggan}}">
+                              <a class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deletemodal{{ row.id_supplier }}">
                                   <i class="fas fa-trash"></i>
                                   Hapus
                               </a>
@@ -83,7 +79,6 @@
             </table>
           </div>
           <!-- /.card-body -->
-
         </div>
         <!-- /.card -->
 
@@ -97,36 +92,36 @@
   </div>
   <!-- /.content-wrapper -->
 
-  <!-- Modal Add Pelanggan -->
+  <!-- Modal Add Toko -->
   <div id="addmodal" class="modal fade" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title">Tambah Data Pelanggan</h4>
+            <h4 class="modal-title">Tambah Data Toko</h4>
           </div>
-          <div class="modal-body card-body register-card-body parent-response-class">
-            <form action="{{url_for('cust.pelanggan_add')}}" method="POST">
+          <div class="modal-body card-body register-card-body">
+            <form action="{{url_for('datab.toko_add')}}" method="POST">
               <div class="form-group input-group">
-                <input type="text" class="form-control" name="nama" placeholder="Nama">
+                <input type="text" class="form-control" name="nama" placeholder="Toko" required>
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="nav-icon fas fa-id-badge"></span>
+                    <span class="fas fa-truck"></span>
                   </div>
                 </div>
               </div>
               <div class="form-group input-group">
-                <input type="number" class="form-control" name="telp" placeholder="Whatsapp">
+                <input type="text" class="form-control" name="telp" placeholder="Whatsapp" required>
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="nav-icon fas fa-mobile-alt"></span>
+                    <span class="fas fa-mobile-alt"></span>
                   </div>
                 </div>
               </div>
               <div class="form-group input-group">
-                <input type="text" class="form-control" name="alamat" placeholder="Alamat">
+                <input type="text" class="form-control" name="alamat" placeholder="Alamat" required>
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="nav-icon fas fa-map-marker-alt"></span>
+                    <span class="fas fa-map-marker-alt"></span>
                   </div>
                 </div>
               </div>
@@ -140,30 +135,30 @@
     </div>
   </div>
 
-  <!-- Modal Edit Pelanggan -->
-  {% for row in pelanggan %}
-    <div id="editmodal{{ row.id_pelanggan }}" class="modal fade" role="dialog">
+  <!-- Modal Edit Toko -->
+  {% for row in supplier %}
+    <div id="editmodal{{ row.id_supplier}}" class="modal fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Ubah Data Pelanggan</h4>
+              <h4 class="modal-title">Ubah Data Toko</h4>
             </div>
-            <div class="modal-body card-body register-card-body parent-response-class">
-              <form action="{{ url_for('cust.pelanggan_edit') }}" method="POST">
+            <div class="modal-body card-body register-card-body">
+              <form action="{{ url_for('datab.toko_edit') }}" method="POST">
                   <div class="form-group input-group">
-                    <input type="hidden"  name="id_pelanggan" value="{{ row.id_pelanggan }}">
-                    <input type="text" class="form-control" name="nama" placeholder="Nama" value="{{ row.nama }}">
+                    <input type="hidden"  name="id_supplier" value="{{ row.id_supplier }}">
+                    <input type="text" class="form-control" name="nama" placeholder="Toko" value="{{ row.nama }}">
                     <div class="input-group-append">
                       <div class="input-group-text">
-                        <span class="nav-icon fas fa-id-badge"></span>
+                        <span class="fas fa-truck"></span>
                       </div>
                     </div>
                   </div>
                   <div class="form-group input-group">
-                    <input type="number" class="form-control" name="telp" placeholder="Whatsapp" value="{{ row.telp }}">
+                    <input type="text" class="form-control" name="telp" placeholder="Whatsapp" value="{{ row.telp }}">
                     <div class="input-group-append">
                       <div class="input-group-text">
-                        <span class="nav-icon fas fa-mobile-alt"></span>
+                        <span class="fas fa-mobile-alt"></span>
                       </div>
                     </div>
                   </div>
@@ -171,7 +166,7 @@
                     <input type="text" class="form-control" name="alamat" placeholder="Alamat" value="{{ row.alamat }}">
                     <div class="input-group-append">
                       <div class="input-group-text">
-                        <span class="nav-icon fas fa-map-marker-alt"></span>
+                        <span class="fas fa-map-marker-alt"></span>
                       </div>
                     </div>
                   </div>
@@ -186,45 +181,27 @@
     </div>
   {% endfor %}
 
-  <!-- Modal Delete Pelanggan -->
-  {% for row in pelanggan %}
-    <div id="deletemodal{{row.id_pelanggan}}" class="modal fade" role="dialog">
+  <!-- Modal Delete Toko -->
+  {% for row in supplier %}
+    <div id="deletemodal{{ row.id_supplier }}" class="modal fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title">Hapus Data Pelanggan</h4>
+              <h4 class="modal-title">Hapus Data Toko</h4>
             </div>
             <div class="modal-body card-body register-card-body">
-              <h6><b>Nama</b></h6>
+              <h6><b>Nama Supplier</b></h6>
               <div class="form-group input-group">
                 <input type="text" class="form-control" value="{{ row.nama }}" disabled>
                 <div class="input-group-append">
                   <div class="input-group-text">
-                    <span class="nav-icon fas fa-id-badge"></span>
+                    <span class="fas fa-truck"></span>
                   </div>
                 </div>
               </div>
-              <h6><b>Whatsapp</b></h6>
-              <div class="form-group input-group">
-                <input type="text" class="form-control" value="{{ row.telp }}" disabled>
-                <div class="input-group-append">
-                  <div class="input-group-text">
-                    <span class="nav-icon fas fa-mobile-alt"></span>
-                  </div>
-                </div>
-              </div>
-              <h6><b>Alamat</b></h6>
-              <div class="form-group input-group">
-                <input type="text" class="form-control" value="{{ row.alamat }}" disabled>
-                <div class="input-group-append">
-                  <div class="input-group-text">
-                    <span class="nav-icon fas fa-map-marker-alt"></span>
-                  </div>
-                </div>
-              </div>
-              <form action="{{ url_for('cust.pelanggan_delete') }}" method="POST">
+              <form action="{{ url_for('datab.toko_delete') }}" method="POST">
                   <div class="modal-footer">
-                    <input type="hidden"  name="id_pelanggan" value="{{ row.id_pelanggan }}">
+                    <input type="hidden"  name="id_supplier" value="{{ row.id_supplier }}">
                     <button class="btn btn-primary btn-dgr" type="submit">Hapus</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                   </div>
