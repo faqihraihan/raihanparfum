@@ -145,6 +145,18 @@
           </li>
           <li class="nav-header">DATA LAINNYA</li>
           <li class="nav-item">
+            {% if ekspedisi_nav %}
+            <a class="nav-link active" disabled>
+            {% else %}
+            <a href="{{ url_for('datab.ekspedisi') }}" class="nav-link">
+            {% endif %}
+              <i class="nav-icon fas fa-shipping-fast"></i>
+              <p>
+                Ekspedisi
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
             {% if ukur_nav %}
             <a class="nav-link active" disabled>
             {% else %}

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from app.models.models import (
     Penjualan, Aroma, Pabrik, Stock, Supplier, Barang, Ukur,
-    Pembelian, Pelanggan, Log_pelanggan, Log_aroma
+    Pembelian, Pelanggan, Log_pelanggan, Log_aroma, Ekspedisi
 )
 from app import db
 from datetime import datetime
@@ -791,3 +791,68 @@ def pembelian_delete():
     flash("Data berhasil dihapus", 'success')
 
     return redirect(url_for('datab.pembelian'))
+
+
+@datab.route('/database/ekspedisi', methods=['GET', 'POST'])
+def ekspedisi():
+    ekspedisi = db.session.query(Ekspedisi).order_by(Ekspedisi.id_ekspedisi.desc()).limit(20).all() 
+
+    return render_template('database/ekspedisi.html', ekspedisi_nav = 'active', ekspedisi = ekspedisi)
+
+
+@datab.route('/database/ekspedisi/add', methods=['POST'])
+def ekspedisi_add():
+    if request.method == 'POST':
+        nama = request.form['nama']
+        telp = request.form['telp']
+        alamat = request.form['alamat']
+
+        last_ekspedisi = db.session.query(Ekspedisi).order_by(cast(func.substr(Ekspedisi.id_ekspedisi, 3), Integer).desc()).first()
+        
+        if last_ekspedisi:
+            # Ekstrak angka dari id_ekspedisi terakhir dan tambahkan 1
+            last_id_num = int(last_ekspedisi.id_ekspedisi[2:])  # Menghilangkan prefix "IP" dan ambil angka
+            new_id_num = last_id_num + 1
+        else:
+            # Jika belum ada data, mulai dari 1
+            new_id_num = 1
+        
+        # Buat id_ekspedisi baru dengan format yang sama
+        new_id_ekspedisi = f"EP{new_id_num}"
+
+        data = Ekspedisi(id_ekspedisi = new_id_ekspedisi,
+                         nama = nama,
+                         telp = telp,
+                         alamat = alamat)
+
+        db.session.add(data)
+        db.session.commit()
+        flash('Data berhasil ditambahkan', 'success')
+
+        return redirect(url_for('datab.ekspedisi'))
+
+
+@datab.route("/database/ekspedisi/edit", methods=['GET', 'POST'])
+def ekspedisi_edit():
+    if request.method == 'POST':
+        update = Ekspedisi.query.get(request.form.get('id_ekspedisi'))
+        update.nama = request.form['nama']
+        update.telp = request.form['telp']
+        update.alamat = request.form['alamat']
+
+        db.session.commit()
+        flash("Data berhasil diubah", 'success')
+
+        return redirect(url_for('datab.ekspedisi'))
+
+
+@datab.route("/database/ekspedisi/delete", methods=['GET', 'POST'])
+def ekspedisi_delete():
+    id_ekspedisi = request.form['id_ekspedisi']
+    delete = Ekspedisi.query.get(id_ekspedisi)
+
+    db.session.delete(delete)
+    db.session.commit()
+    flash("Data berhasil dihapus", 'success')
+
+    return redirect(url_for('datab.ekspedisi'))

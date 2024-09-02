@@ -3,8 +3,23 @@ from app import db
 from app.models.models import Pelanggan, Log_pelanggan
 from datetime import datetime
 from sqlalchemy import func
+from app.utils.generate_qr import generate_qr, delete_qr
 
 cust = Blueprint('cust', __name__)
+
+
+@cust.route('/pelanggan/update_db', methods=['GET', 'POST'])
+def update_db():
+    pelanggan = db.session.query(Pelanggan).all()
+
+    for row in pelanggan:
+        id_pelanggan = row.id_pelanggan
+        data = 'pelanggan'
+
+        # Panggil fungsi generate_qr dari qr_generator.py
+        generate_qr(id_pelanggan, data)
+
+    return redirect(url_for('cust.pelanggan'))
 
 
 @cust.route('/pelanggan', methods=['GET', 'POST'])
@@ -22,7 +37,7 @@ def pelanggan_add():
 
         check_telp = db.session.query(Pelanggan).filter(Pelanggan.telp == telp).first()
 
-        if check_telp:
+        if not check_telp:
             flash('No. Hp sudah terdaftar', 'primary')
 
             return redirect(url_for('cust.purchase_history', id_pelanggan = check_telp.id_pelanggan))
@@ -54,6 +69,10 @@ def pelanggan_add():
 
             db.session.add(data)
             db.session.commit()
+
+            qr_data = 'pelanggan'
+            generate_qr(id_pelanggan, qr_data)
+
             flash('Data berhasil ditambahkan', 'success')
 
             return redirect(url_for('cust.pelanggan'))
@@ -68,16 +87,18 @@ def pelanggan_edit():
         update.alamat = request.form['alamat']
 
         check_telp = db.session.query(Pelanggan).filter(Pelanggan.telp == telp).first()
+        print(check_telp)
 
         if check_telp:
-            flash('No. Hp sudah terdaftar', 'primary')
+            if update.telp != telp:
+                flash('No. Hp sudah terdaftar', 'primary')
 
-            return redirect(url_for('cust.purchase_history', id_pelanggan = check_telp.id_pelanggan))
+                return redirect(url_for('cust.purchase_history', id_pelanggan = check_telp.id_pelanggan))
         else:
             update.telp = telp
 
-            db.session.commit()
-            flash("Data berhasil diubah", 'success')
+        db.session.commit()
+        flash("Data berhasil diubah", 'success')
 
         return redirect(url_for('cust.pelanggan'))
 
@@ -93,6 +114,10 @@ def pelanggan_delete():
     for data in delete_log_pelanggan:
         db.session.delete(data)
     db.session.commit()
+
+    qr_data = 'pelanggan'
+    delete_qr(id_pelanggan, qr_data)
+
     flash("Data berhasil dihapus", 'success')
 
     return redirect(url_for('cust.pelanggan'))

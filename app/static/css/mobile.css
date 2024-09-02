@@ -1,0 +1,8 @@
+.content-wrapper.mobile{
+    margin-left: 0 !important;
+}
+
+.title-purchase-history, .breadcrumb.mobile {
+    margin-left: 20px !important;
+    width: 100% !important;
+}

@@ -9,6 +9,7 @@ from datetime import datetime
 # IP = Item Parfum
 # IB = Item Botol
 # IL = Item Larutan
+# EP = Ekpedisi
 # MEM = Pelanggan
 
 
@@ -125,11 +126,24 @@ class Log_aroma(db.Model):
     id_aroma = db.Column(db.String(50), db.ForeignKey('aroma.id_aroma'))
     id_pembelian = db.Column(db.Integer(), db.ForeignKey('pembelian.id_pembelian'))
 
+
 class Pesanan(db.Model):
     # O124081001 (O-1-2408-10001: Prefix-ID Supplier-WaktuTerdaftar-Urutan)
     id_pesanan = db.Column(db.String(50), primary_key=True)
     id_supplier = db.Column(db.Integer(), db.ForeignKey('supplier.id_supplier'))
+    id_ekspedisi = db.Column(db.String(50), db.ForeignKey('ekspedisi.id_ekspedisi'))
     nama = db.Column(db.String(20))
     item = db.Column(db.JSON)
     status = db.Column(db.Integer())
     created_at = db.Column(db.DateTime, default=datetime.now)
+
+
+class Ekspedisi(db.Model):
+    # EP1 (EP-1: Prefix-ID Ekspedisi)
+    id_ekspedisi = db.Column(db.String(50), primary_key = True)
+    nama = db.Column(db.String(20))
+    telp = db.Column(db.String(20))
+    alamat = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime, default=datetime.now)
+
+    pesanan_rs = db.relationship("Pesanan", backref="ekspedisi")

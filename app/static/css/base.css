@@ -99,6 +99,7 @@ i.purchase_history {
 
 .title-purchase-history {
     margin-left: 25px !important;
+    width: 75%;
 }
 
 .select2-selection.select2-selection--single {

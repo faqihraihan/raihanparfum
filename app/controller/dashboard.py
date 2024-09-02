@@ -2,31 +2,10 @@ from datetime import datetime, timedelta
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for
 from sqlalchemy import func, extract
 from app import db
-from app.models.models import Penjualan, Supplier, Pesanan, Pabrik, Aroma, Barang
+from app.models.models import Penjualan, Supplier, Pesanan, Pabrik, Aroma, Barang, Ekspedisi
 from sqlalchemy.orm.attributes import flag_modified
 
 dashb = Blueprint('dashb', __name__)
-
-
-@dashb.route('/dashboard/update_db')
-def update_db():
-    data = db.session.query(Pesanan).all()
-
-    for row in data:
-        updated_items = []
-        if row.item:
-            for item in row.item:
-                if 'id_btl' in item and item['id_btl'].startswith('IL'):
-                    item['id_larutan'] = item.pop('id_btl')
-                updated_items.append(item)
-        
-        row.item = updated_items
-        db.session.add(row)
-        flag_modified(row, 'item')
-
-    db.session.commit()
-
-    return redirect(url_for('dashb.dashboard'))
 
 
 @dashb.route('/', methods=['GET', 'POST'])
@@ -295,6 +274,7 @@ def list_pesanan_add():
 
         data = Pesanan(id_pesanan = id_pesanan,
                        id_supplier = id_supplier,
+                       item = [],
                        nama = nama,
                        status = status)
                     
@@ -387,6 +367,7 @@ def list_pesanan_delete_pesanan(order_id):
 @dashb.route("/dashboard/list-pesanan/<order_id>", methods=['GET', 'POST'])
 def detail_pesanan(order_id):
     pesanan = db.session.query(Pesanan).filter_by(id_pesanan=order_id).first()
+    ekspedisi = db.session.query(Ekspedisi).all()
 
     now = datetime.now()
     year = now.strftime("%Y")
@@ -432,4 +413,14 @@ def detail_pesanan(order_id):
     if request.path.endswith('/print'):
         return render_template('dashboard/detail-pesanan-print.html', list_pesanan_nav = 'active', order_id = order_id, pesanan = pesanan, time = time, aroma = aroma, larutan = larutan, botol = botol)
     else:
-        return render_template('dashboard/detail-pesanan.html', list_pesanan_nav = 'active', order_id = order_id, pesanan = pesanan, time = time, aroma = aroma, larutan = larutan, botol = botol)
+        return render_template('dashboard/detail-pesanan.html', list_pesanan_nav = 'active', order_id = order_id, pesanan = pesanan, time = time, aroma = aroma, larutan = larutan, botol = botol, ekspedisi = ekspedisi)
+    
+
+@dashb.route('/dashboard/list-pesanan/<order_id>/ekspedisi-add', methods=['POST'])
+def ekspedisi_add(order_id):
+    update = Pesanan.query.get(order_id)
+    update.id_ekspedisi = request.form['ekspedisi']
+
+    db.session.commit()
+
+    return redirect(url_for('dashb.detail_pesanan', order_id = order_id))

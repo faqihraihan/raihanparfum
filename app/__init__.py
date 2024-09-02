@@ -31,6 +31,12 @@ app.register_blueprint(datab)
 from .controller.pelanggan import cust
 app.register_blueprint(cust)
 
+from .controller.scan import scan
+app.register_blueprint(scan)
+
+from .controller.mobile import mobile
+app.register_blueprint(mobile)
+
 
 def format_telp(value):
     return '-'.join([value[i:i+4] for i in range(0, len(value), 4)])
