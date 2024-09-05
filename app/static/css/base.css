@@ -171,3 +171,12 @@ i.purchase_history {
 .no-border {
     border: 0;
 }
+
+/* Darkmode Scrollbar */
+section.content.pb-3 {
+    scrollbar-color: #686868 #424242; /* thumb color, track color */
+}
+
+section.content.pb-3::-webkit-scrollbar-thumb:hover {
+    background-color: #888888 !important; /* warna scrollbar thumb saat hover */
+}

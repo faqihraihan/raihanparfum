@@ -23,3 +23,18 @@ document.getElementById('searchForm').onsubmit = function(e) {
         this.submit();
     }
 };
+
+async function copyImage(button) {
+  const modal = button.closest('.modal.show');
+  const img = modal.querySelector('img');
+  
+  // Fetch image from the src and convert it to a Blob
+  const response = await fetch(img.src);
+  const blob = await response.blob();
+  const clipboardItem = new ClipboardItem({ [blob.type]: blob });
+
+  // Copy image to clipboard
+  await navigator.clipboard.write([clipboardItem]);
+
+  alert('Gambar telah disalin!');
+}

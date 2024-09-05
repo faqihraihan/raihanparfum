@@ -15,9 +15,10 @@ def update_db():
     for row in pelanggan:
         id_pelanggan = row.id_pelanggan
         data = 'pelanggan'
+        nama = row.id_pelanggan
 
         # Panggil fungsi generate_qr dari qr_generator.py
-        generate_qr(id_pelanggan, data)
+        generate_qr(id_pelanggan, data, nama)
 
     return redirect(url_for('cust.pelanggan'))
 
@@ -71,7 +72,9 @@ def pelanggan_add():
             db.session.commit()
 
             qr_data = 'pelanggan'
-            generate_qr(id_pelanggan, qr_data)
+
+            # Panggil fungsi generate_qr dari qr_generator.py
+            generate_qr(id_pelanggan, qr_data, id_pelanggan)
 
             flash('Data berhasil ditambahkan', 'success')
 
