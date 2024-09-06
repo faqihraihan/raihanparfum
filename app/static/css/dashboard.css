@@ -44,3 +44,7 @@ label.normal {
     word-break: normal;
     margin-bottom: 0;
 }
+
+.btn-tool.last-tool {
+    margin-right: .1rem;
+}

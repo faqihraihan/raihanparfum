@@ -36,9 +36,12 @@ def pelanggan_add():
     if request.method == 'POST':
         telp = request.form['telp']
 
-        check_telp = db.session.query(Pelanggan).filter(Pelanggan.telp == telp).first()
+        if telp:
+            check_telp = db.session.query(Pelanggan).filter(Pelanggan.telp == telp).first()
+        else:
+            check_telp = None
 
-        if not check_telp:
+        if check_telp:
             flash('No. Hp sudah terdaftar', 'primary')
 
             return redirect(url_for('cust.purchase_history', id_pelanggan = check_telp.id_pelanggan))

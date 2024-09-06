@@ -1,13 +1,18 @@
 import qrcode
 import os
 from PIL import Image, ImageDraw, ImageFont
+from pathlib import Path
+
 
 def generate_qr(id, data, customer_name):
-    qr_folder = f'D:/Raihan Parfum/app/static/img/qr/{data}'
+    qr_folder = f'../static/img/qr/{data}'
+
+    current_dir = Path(__file__).parent.absolute()
+    abs_qrfolder = current_dir / qr_folder
 
     # Membuat direktori jika belum ada
-    if not os.path.exists(qr_folder):
-        os.makedirs(qr_folder)
+    if not os.path.exists(abs_qrfolder):
+        os.makedirs(abs_qrfolder)
 
     # Generate QR code
     qr = qrcode.QRCode(
@@ -23,8 +28,12 @@ def generate_qr(id, data, customer_name):
     qr_img = qr.make_image(fill_color="black", back_color="white").convert('RGB')
 
     # Open the logo image
-    logo_path = 'D:/Raihan Parfum/app/static/img/logo-raihan-parfum.png'
-    logo = Image.open(logo_path)
+    logo_path = '../static/img/logo-raihan-parfum.png'
+
+    current_dir = Path(__file__).parent.absolute()
+    abs_logopath = current_dir / logo_path
+
+    logo = Image.open(abs_logopath)
     
     # Resize the logo to fit within the QR code
     qr_width, qr_height = qr_img.size
@@ -40,8 +49,12 @@ def generate_qr(id, data, customer_name):
 
     # Create a new image with space for text
     font_size = 20
-    font_path = 'D:/Raihan Parfum/app/static/font/SourceSans3-Regular.ttf'
-    font = ImageFont.truetype(font_path, font_size)  # Menggunakan font TrueType
+    font_path = '../static/font/SourceSans3-Regular.ttf'
+
+    current_dir = Path(__file__).parent.absolute()
+    abs_fontpath = current_dir / font_path
+
+    font = ImageFont.truetype(abs_fontpath, font_size)  # Menggunakan font TrueType
 
     text_img = Image.new('RGB', (qr_width, qr_height + font_size + 10), 'white')
     text_img.paste(qr_img, (0, 0))
@@ -58,14 +71,17 @@ def generate_qr(id, data, customer_name):
     draw.text(text_position, customer_name, fill="black", font=font)
 
     # Path lengkap untuk menyimpan file
-    file_path = os.path.join(qr_folder, f'{id}.png')
+    file_path = os.path.join(abs_qrfolder, f'{id}.png')
 
     # Save image to the specified path
     text_img.save(file_path)
 
 def delete_qr(id, data):
-    qr_folder = f'D:/Raihan Parfum/app/static/img/qr/{data}'
+    qr_folder = f'../static/img/qr/{data}'
+
+    current_dir = Path(__file__).parent.absolute()
+    abs_qrfolder = current_dir / qr_folder
 
     # Path lengkap untuk gambar QR code
-    file_path = os.path.join(qr_folder, f'{id}.png')
+    file_path = os.path.join(abs_qrfolder, f'{id}.png')
     os.remove(file_path)
